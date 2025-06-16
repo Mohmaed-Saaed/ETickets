@@ -1,3 +1,6 @@
+using ETickets.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace ETickets
 {
     public class Program
@@ -8,6 +11,7 @@ namespace ETickets
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
             var app = builder.Build();
 
