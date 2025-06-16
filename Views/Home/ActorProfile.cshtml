@@ -1,0 +1,85 @@
+﻿<style>
+    body {
+        font-family: "Inter", sans-serif;
+        background-color: #f0f2f5;
+    }
+
+    .profile-container {
+        background-color: #fff;
+        border-radius: 0.5rem; /* rounded-lg */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-top: 3rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center items horizontally */
+        text-align: center; /* Center text */
+    }
+
+    .profile-header {
+        font-size: 2.5rem; /* text-4xl */
+        font-weight: bold;
+        color: #343a40;
+        margin-bottom: 2rem;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #007bff; /* Primary color border */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        margin-bottom: 1.5rem; /* mb-6 */
+    }
+
+    .actor-name {
+        font-size: 2rem; /* text-3xl */
+        font-weight: bold;
+        color: #343a40;
+        margin-bottom: 1rem; /* mb-4 */
+    }
+
+    .bio-section p {
+        font-size: 1.125rem; /* text-lg */
+        line-height: 1.6;
+        color: #495057;
+        margin-bottom: 1rem;
+    }
+
+    .social-media-links a {
+        font-size: 1.125rem; /* text-lg */
+        color: #007bff; /* Bootstrap primary blue */
+        text-decoration: none;
+        margin: 0 0.5rem;
+        transition: color 0.3s ease;
+    }
+
+        .social-media-links a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+
+</style>
+
+
+<h1 class="profile-header text-center">Actor Profile</h1>
+
+<div class="profile-container">
+    <img src="https://placehold.co/120x120/a0a0a0/ffffff?text=AS" onerror="this.onerror=null;this.src='https://placehold.co/120x120/a0a0a0/ffffff?text=AS';" alt="Actor Avatar" class="profile-avatar">
+    <h2 class="actor-name">Albert Sowman</h2>
+
+    <div class="bio-section mb-4">
+        <p><strong>Bio:</strong> Donec diam neque, vestibulum eget, vulputate ut, ultrices vel, augue. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec pharetra, magna vestibulum aliquet ultrices, erat tortor sollicitudin mi, sit amet lobortis sapien non mi. Integer ac neque.</p>
+    </div>
+
+    <div class="social-media-links">
+        <p class="mb-2"><strong>Social media:</strong></p>
+        <div>
+            <a href="#" target="_blank">Twitter</a>
+            <a href="#" target="_blank">Instagram</a>
+            <a href="#" target="_blank">IMDb</a>
+        </div>
+    </div>
+</div>
