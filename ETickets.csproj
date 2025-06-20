@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -7,15 +7,40 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Areas\Admin\Views\401.cshtml" />
+    <Content Remove="Areas\Admin\Views\404.cshtml" />
+    <Content Remove="Areas\Admin\Views\500.cshtml" />
+    <Content Remove="Areas\Admin\Views\charts.cshtml" />
+    <Content Remove="Areas\Admin\Views\layout-sidenav-light.cshtml" />
+    <Content Remove="Areas\Admin\Views\layout-static.cshtml" />
+    <Content Remove="Areas\Admin\Views\login.cshtml" />
+    <Content Remove="Areas\Admin\Views\password.cshtml" />
+    <Content Remove="Areas\Admin\Views\register.cshtml" />
+    <Content Remove="Areas\Admin\Views\tables.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="NewFolder\" />
+    <None Include="Areas\Admin\Views\Home\401.cshtml" />
+    <None Include="Areas\Admin\Views\Home\404.cshtml" />
+    <None Include="Areas\Admin\Views\Home\500.cshtml" />
+    <None Include="Areas\Admin\Views\Home\charts.cshtml" />
+    <None Include="Areas\Admin\Views\Home\index.cshtml" />
+    <None Include="Areas\Admin\Views\Home\layout-sidenav-light.cshtml" />
+    <None Include="Areas\Admin\Views\Home\layout-static.cshtml" />
+    <None Include="Areas\Admin\Views\Home\login.cshtml" />
+    <None Include="Areas\Admin\Views\Home\password.cshtml" />
+    <None Include="Areas\Admin\Views\Home\register.cshtml" />
+    <None Include="Areas\Admin\Views\Home\tables.cshtml" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Azure;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ETickets.Models;
 
@@ -16,4 +18,5 @@ public partial class Actor
     public string? ProfilePicture { get; set; }
 
     public string? News { get; set; }
+    public virtual ICollection<ActorMovie> ActorMovies { get; set; } = new List<ActorMovie>();
 }

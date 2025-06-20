@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ETickets.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace ETickets.Data;
 
@@ -24,7 +25,9 @@ namespace ETickets.Data;
 
         public virtual DbSet<Cinema> Cinemas { get; set; }
 
-        public virtual DbSet<Movie> Movies { get; set; }
+        public virtual DbSet<Movie>  Movies { get; set; }
+
+        public virtual DbSet<MovieDisplayState> MovieDisplayStates { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -52,15 +55,20 @@ namespace ETickets.Data;
 
             modelBuilder.Entity<ActorMovie>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.ActorId, e.MovieId }); // Define composite primary key
 
-                entity.HasOne(d => d.Actor).WithMany()
+                entity.HasOne(d => d.Actor)
+                    .WithMany(d => d.ActorMovies) // This is correct, assuming Actor.ActorMovies exists
                     .HasForeignKey(d => d.ActorId)
                     .HasConstraintName("FK__ActorMovi__Actor__4BAC3F29");
 
-                entity.HasOne(d => d.Movie).WithMany()
+                entity.HasOne(d => d.Movie)
+                    .WithMany(d => d.ActorMovies) // This is correct, assuming Movie.ActorMovies exists
                     .HasForeignKey(d => d.MovieId)
                     .HasConstraintName("FK__ActorMovi__Movie__4CA06362");
+
+
+
             });
 
             modelBuilder.Entity<Category>(entity =>
@@ -117,6 +125,10 @@ namespace ETickets.Data;
                 entity.HasOne(d => d.Cinema).WithMany(p => p.Movies)
                     .HasForeignKey(d => d.CinemaId)
                     .HasConstraintName("FK__Movies__CinemaId__44FF419A");
+
+                entity.HasOne(d => d.MovieDisplayState).WithMany(p => p.Movies)
+                      .HasForeignKey(d => d.MovieDisplayStateId);
+
             });
 
             OnModelCreatingPartial(modelBuilder);

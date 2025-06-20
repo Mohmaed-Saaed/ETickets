@@ -1,0 +1,69 @@
+﻿@model List<Category>
+<style>
+    h1 {
+    color: #000000; /* Black color for the heading */
+    margin-bottom: 30px;
+    font-weight: 700; /* Bold font for heading */
+    }
+
+    .list-group-item {
+    background-color: transparent; /* Transparent background for list items */
+    border-top: none; /* No top border */
+    border-left: none; /* No left border */
+    border-right: none; /* No right border */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Light bottom border for white background */
+    color: #000000; /* Black text for list items */
+    display: flex; /* Use flexbox for spacing name and link */
+    justify-content: space-between; /* Space between content */
+    align-items: center; /* Vertically align content */
+    padding: 15px 0; /* Padding for list items */
+    }
+
+    .list-group-item:last-child {
+    border-bottom: none; /* No border for the last item */
+    }
+
+    .list-group-item a {
+    color: #007bff; /* Bootstrap primary blue for links */
+    text-decoration: none; /* No underline */
+    font-weight: 400;
+    }
+
+    .list-group-item a:hover {
+    text-decoration: underline; /* Underline on hover */
+    color: #0056b3; /* Darker blue on hover */
+    }
+
+    .list-header {
+    font-weight: 700; /* Bold font for 'Name' header */
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2); /* Stronger border for header */
+    display: flex;
+    justify-content: space-between;
+    }
+</style>
+
+
+
+<h1 class="mb-4">Categories</h1>
+
+<!-- List Header -->
+<div class="list-header">
+    <div class="col-6">Name</div>
+    <div class="col-6 text-end"></div> <!-- Empty column to align "All Movies" links -->
+</div>
+
+<!-- Categories List -->
+<ul class="list-group list-group-flush">
+
+    @foreach(var Category in Model)
+    {
+        <li class="list-group-item">
+            <span>@Category.Name</span>
+            <a asp-action="Index" asp-route-CategoryId="@Category.Id" class="text-decoration-none">All Movies</a>
+        </li>
+    }
+            
+</ul>
+

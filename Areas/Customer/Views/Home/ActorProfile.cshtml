@@ -1,4 +1,6 @@
-﻿<style>
+﻿@model Actor
+
+<style>
     body {
         font-family: "Inter", sans-serif;
         background-color: #f0f2f5;
@@ -67,11 +69,11 @@
 <h1 class="profile-header text-center">Actor Profile</h1>
 
 <div class="profile-container">
-    <img src="https://placehold.co/120x120/a0a0a0/ffffff?text=AS" onerror="this.onerror=null;this.src='https://placehold.co/120x120/a0a0a0/ffffff?text=AS';" alt="Actor Avatar" class="profile-avatar">
-    <h2 class="actor-name">Albert Sowman</h2>
+    <img src="~/images/cast/@Model.ProfilePicture" onerror="this.onerror=null;this.src='https://placehold.co/120x120/a0a0a0/ffffff?text=AS';" alt="Actor Avatar" class="profile-avatar">
+    <h2 class="actor-name">@Model.FirstName @Model.LastName</h2>
 
     <div class="bio-section mb-4">
-        <p><strong>Bio:</strong> Donec diam neque, vestibulum eget, vulputate ut, ultrices vel, augue. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec pharetra, magna vestibulum aliquet ultrices, erat tortor sollicitudin mi, sit amet lobortis sapien non mi. Integer ac neque.</p>
+        <p><strong>Bio:</strong>@Model.Bio</p>
     </div>
 
     <div class="social-media-links">
