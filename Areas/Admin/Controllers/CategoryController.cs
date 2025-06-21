@@ -22,16 +22,20 @@ namespace ETickets.Areas.Admin.Controllers
             return View(category);
         }
         [HttpGet]
-        public IActionResult CreateEdit(int? id)
+        public IActionResult Save(int? id)
         {
-            var Category = _db.Categories.FirstOrDefault(c => c.Id == id);
+            Category category = new Category();
 
+            if (_db.Categories.Any(a => a.Id == id))
+            {
+                category = _db.Categories.FirstOrDefault(a => a.Id == id);
+            }
 
-            return View(Category);
+            return View(category);
         }
 
         [HttpPost]
-        public IActionResult CreateEdit(Category category)
+        public IActionResult Save(Category category)
         {
 
             if(category.Id != 0)

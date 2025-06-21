@@ -9,23 +9,23 @@ public partial class Movie
 {
     public int Id { get; set; }
 
-    public string? Name { get; set; }
+    public string Name { get; set; } = null!;
 
-    public string? Description { get; set; }
+    public string Description { get; set; } = null!;
 
-    public decimal? Price { get; set; }
+    public decimal Price { get; set; }  
 
     public string ImgUrl { get; set; } = null!;
 
     public string TrailerUrl { get; set; } = null!;
 
-    public DateTime? StartDate { get; set; }
+    public DateTime StartDate { get; set; }
 
-    public DateTime? EndDate { get; set; }
+    public DateTime EndDate { get; set; }
 
     public int MovieDisplayStateId { get; set; }
 
-    public bool? MovieStatus { get; set; }
+    public bool MovieStatus { get; set; }
 
     public int? CinemaId { get; set; }
 

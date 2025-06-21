@@ -1,0 +1,91 @@
+﻿@model Actor
+
+@{
+    ViewData["Title"] = "Create";
+}
+<div class="p-3">
+    <h1>Create Actor</h1> @* Changed from Create Category to Create Actor based on the model *@
+
+    <hr />
+    <div class="row justify-content-center">
+        <div class="col-md-7 d-flex justify-content-end">
+            <div class="w-50"> 
+                @* Adjusted column size for the form to be centered and take more space *@
+                <form asp-action="Save" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="FirstName" class="control-label"></label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="LastName" class="control-label"></label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ProfilePicture" class="control-label"></label>
+                        <input asp-for="ProfilePicture" class="form-control" type="file" onchange="previewImage(event)" />
+                        <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Bio" class="control-label"></label>
+                        <textarea asp-for="Bio" class="form-control"></textarea>
+                        <span asp-validation-for="Bio" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="News" class="control-label"></label>
+                        <textarea asp-for="News" class="form-control" type="text"></textarea>
+                        <span asp-validation-for="News" class="text-danger"></span>
+                    </div>
+                    <div class="form-group d-flex justify-content-between mt-3">
+                        <input type="submit" value="Add" class="btn btn-primary" />
+                        <a class="btn btn-dark" asp-action="Index">Back</a>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        <div class="col-md-4 offset-md-1 d-flex align-items-center justify-content-center">
+            @if(Model.ProfilePicture != null)
+            {
+                <img src="~/images/cast/@Model.ProfilePicture" id="preview" class="img-thumbnail" style="max-width: 45%;" />
+            } else
+            {
+                <img src="~/images/cast/@Model.ProfilePicture" alt="Not found" id="preview" class="img-thumbnail" style="max-width: 45%; display: none;" />
+
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Corrected the event listener from "chnage" to "change"
+        $("#ProfilePicture").on("change", previewImage);
+
+        function previewImage(event) {
+            const input = event.target;
+            const preview = document.getElementById('preview');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
+            }
+        }
+    </script>
+}
