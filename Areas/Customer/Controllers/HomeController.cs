@@ -25,7 +25,7 @@ namespace ETickets.Areas.Customer.Controllers
 
         public IActionResult Index(IndexVM indexVM)
         {
-            IQueryable<Movie> MoviesList = _db.Movies.Include(m => m.Category).Include(m => m.Cinema).Where(m => m.Name.Contains(indexVM.Search ?? ""));
+            IQueryable<Movie> MoviesList = _db.Movies.Include(m => m.Category).Include(m => m.Cinema).Where(m => m.MovieStatus == true && m.Name.Contains(indexVM.Search ?? ""));
 
             if (indexVM.CategoryId != 0)
             {

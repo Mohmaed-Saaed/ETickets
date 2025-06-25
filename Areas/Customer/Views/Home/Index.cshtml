@@ -89,10 +89,10 @@
                         <div class="movie-details">
                             <div class="movie-info">
                                 <p><strong>Price:</strong> <span class="badge bg-secondary rounded-pill px-3 py-2 text-base">@movie.Price</span></p>
-                                <p><strong>Cinema:</strong> @movie.Cinema.Name</p>
+                                <p><strong>Cinema:</strong> @movie.Cinema?.Name</p>
                                 <p><strong>Start Date:</strong> @movie.StartDate </p>
                                 <p><strong>End Date:</strong> @movie.EndDate </p>
-                                <p><strong>Category:</strong> <a href="#" class="text-decoration-none text-blue-600 hover:underline">@movie.Category.Name</a></p>
+                                <p><strong>Category:</strong> <span  class="text-decoration-none text-blue-600 hover:underline">@movie.Category?.Name</span></p>
                                 <span class="btn-sm rounded-md shadow-sm px-3 py-2 font-medium
 
                                 @(movie.MovieDisplayStateId == (int)Global.MovieStatus.Available ? "bg-primary" :

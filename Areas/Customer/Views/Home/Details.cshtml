@@ -126,10 +126,9 @@
                 <div class="cast-avatars">
                     @foreach(var Imag in Model.ActorMovies)
                     {
-                            <a asp-action="ActorProfile" asp-route-Id="@Imag.ActorId">
+                           <a asp-action="ActorProfile" asp-route-Id="@Imag.ActorId">
                            <img src="~/images/cast/@Imag.Actor?.ProfilePicture" onerror="this.onerror=null;this.src='https://placehold.co/48x48/d0d0d0/ffffff?text=C1';" alt="Cast Member 1" class="cast-avatar">
                         </a>
-                       
                     }
                 </div>
                 </div>

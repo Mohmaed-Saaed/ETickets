@@ -5,7 +5,6 @@
 }
 <div class="p-3">
     <h1>Create Actor</h1> @* Changed from Create Category to Create Actor based on the model *@
-
     <hr />
     <div class="row justify-content-center">
         <div class="col-md-7 d-flex justify-content-end">
@@ -13,6 +12,7 @@
                 @* Adjusted column size for the form to be centered and take more space *@
                 <form asp-action="Save" enctype="multipart/form-data">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
                     <div class="form-group">
                         <label asp-for="FirstName" class="control-label"></label>
                         <input asp-for="FirstName" class="form-control" />
