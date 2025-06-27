@@ -4,6 +4,7 @@ using ETickets.Models;
 using ETickets.ModelView.Admin;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace ETickets.Areas.Admin.Controllers
 {
@@ -73,7 +74,8 @@ namespace ETickets.Areas.Admin.Controllers
 
                 Movie = movie,
 
-                ActorIds = selectedActorIds
+                ActorIds = selectedActorIds,
+                SubImages = _db.MovieImages.Where(x => x.MovieId == id).ToList()
             };
             return View(adminMovieIndexVM);
         }
@@ -95,6 +97,24 @@ namespace ETickets.Areas.Admin.Controllers
 
                 movieVm.Movie.ImgUrl = fileName;
             }
+            else
+            {
+
+                if(movieVm.IsMainImageRemoved)
+                {
+                    movieVm.Movie.ImgUrl = null;
+                } else
+                {
+                    var MovieDb = _db.Movies.AsNoTracking().FirstOrDefault(m => m.Id == movieVm.Movie.Id);
+
+                    if (MovieDb is not null)
+                    {
+                        movieVm.Movie.ImgUrl = MovieDb.ImgUrl;
+                    }
+                }
+
+
+            }
 
             if (movieVm.Movie.Id != 0)
             {
@@ -107,6 +127,74 @@ namespace ETickets.Areas.Admin.Controllers
                 _db.Movies.Add(movieVm.Movie);
 
                 _db.SaveChanges();
+            }
+
+
+
+
+            if(movieVm.ImgFiles is not null && movieVm.ImgFiles.Count > 0)
+            {
+
+                List<MovieImage> movieImages = new List<MovieImage>();
+
+                foreach (var movieImg in movieVm.ImgFiles)
+                {
+
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(movieImg.FileName);
+
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movies\\");
+
+                        var filePathWithFileName = Path.Combine(filePath, fileName);
+
+                        using (var createFile = System.IO.File.Create(filePathWithFileName))
+                        {
+                            movieImg.CopyTo(createFile);
+                        }
+
+                    movieImages.Add(new MovieImage { MovieId = movieVm.Movie.Id, ImageUrl = fileName });
+
+                }
+
+                _db.MovieImages.AddRange(movieImages);
+
+                _db.SaveChanges();
+
+            }
+
+
+            if(movieVm.SubImagesRemoved is not null && movieVm.SubImagesRemoved.Count > 0)
+            {
+                var movieImages = _db.MovieImages.Where(m => movieVm.SubImagesRemoved.Contains(m.Id)).ToList();
+
+
+                if(movieImages is not null && movieImages.Count > 0)
+                {
+
+
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movies\\");
+
+
+
+                    foreach(var image in movieImages)
+                    {
+                        if (image.ImageUrl is not null)
+                        {
+                            var filePathWithFileName = Path.Combine(filePath, image.ImageUrl);
+
+                            if (System.IO.File.Exists(filePathWithFileName))
+                            {
+                                System.IO.File.Delete(filePathWithFileName);
+                            }
+                        }
+                    }
+     
+                    _db.MovieImages.RemoveRange(movieImages);
+
+                    _db.SaveChanges();
+
+                }
+
+
             }
 
             List<ActorMovie> actorMovies = new();
@@ -155,7 +243,6 @@ namespace ETickets.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
         public IActionResult Delete(int id)
         {
             if (_db.Movies.Any(m => m.Id == id))
@@ -174,10 +261,29 @@ namespace ETickets.Areas.Admin.Controllers
                     }
                 }
 
-                
+                var movieImages = _db.MovieImages.Where(m => m.MovieId == id).ToList();
 
 
+                if(movieImages is not null && movieImages.Count > 0)
+                {
 
+                    foreach(var movieImg in movieImages)
+                    {
+
+                        if(movieImg.ImageUrl is not null)
+                        {
+                            var filePathWithFileName = Path.Combine(filePath, movieImg.ImageUrl);
+
+                            if (System.IO.File.Exists(filePathWithFileName))
+                            {
+                                System.IO.File.Delete(filePathWithFileName);
+                            }
+                        }
+                    }
+                    _db.MovieImages.RemoveRange(movieImages);
+
+                    _db.SaveChanges();
+                }
                 _db.Movies.Remove(movie);
 
                 _db.SaveChanges();
