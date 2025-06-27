@@ -99,21 +99,34 @@ namespace ETickets.Areas.Admin.Controllers
             }
             else
             {
+                var MovieDb = _db.Movies.AsNoTracking().FirstOrDefault(m => m.Id == movieVm.Movie.Id);
 
-                if(movieVm.IsMainImageRemoved)
+                if (MovieDb is not null)
                 {
+                    if (movieVm.IsMainImageRemoved)
+                {
+
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movies\\");
+
+                    if (MovieDb.ImgUrl is not null)
+                    {
+                        var filePathWithFileName = Path.Combine(filePath, MovieDb.ImgUrl);
+
+                        if (System.IO.File.Exists(filePathWithFileName))
+                        {
+                            System.IO.File.Delete(filePathWithFileName);
+                        }
+                    }
                     movieVm.Movie.ImgUrl = null;
-                } else
-                {
-                    var MovieDb = _db.Movies.AsNoTracking().FirstOrDefault(m => m.Id == movieVm.Movie.Id);
 
-                    if (MovieDb is not null)
+
+          
+                }
+                else
                     {
                         movieVm.Movie.ImgUrl = MovieDb.ImgUrl;
-                    }
+                     }
                 }
-
-
             }
 
             if (movieVm.Movie.Id != 0)
