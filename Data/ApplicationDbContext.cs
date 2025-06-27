@@ -27,6 +27,8 @@ namespace ETickets.Data;
 
         public virtual DbSet<Movie>  Movies { get; set; }
 
+        public virtual DbSet<MovieImage> MovieImages { get; set; }
+
         public virtual DbSet<MovieDisplayState> MovieDisplayStates { get; set; }
 
 

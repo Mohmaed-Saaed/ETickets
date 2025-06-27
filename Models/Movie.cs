@@ -25,7 +25,6 @@ public partial class Movie
     [Display(Name = "End date")]
     public DateTime EndDate { get; set; }
 
-
     [Display(Name = "Movie state")]
     public int MovieDisplayStateId { get; set; }
     [Display(Name = "Movie status")]
@@ -36,9 +35,7 @@ public partial class Movie
     public int? CategoryId { get; set; }
 
     public virtual ICollection<ActorMovie> ActorMovies { get; set; } = new List<ActorMovie>();
-
-
-
+    public virtual ICollection<MovieImage>  MovieImages { get; set; } = new List<MovieImage>();
     public virtual Category? Category { get; set; }
     public virtual MovieDisplayState? MovieDisplayState { get; set; }
     public virtual Cinema? Cinema { get; set; }

@@ -160,11 +160,11 @@ namespace ETickets.Areas.Admin.Controllers
         {
             if (_db.Movies.Any(m => m.Id == id))
             {
-                var movie = _db.Movies.FirstOrDefault(m => m.Id == id);
+                var movie = _db.Movies.First(m => m.Id == id);
 
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movies\\");
                 if (movie.ImgUrl is not null)
                 {
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movies\\");
 
                     var filePathWithFileName = Path.Combine(filePath, movie.ImgUrl);
 
@@ -173,6 +173,10 @@ namespace ETickets.Areas.Admin.Controllers
                         System.IO.File.Delete(filePathWithFileName);
                     }
                 }
+
+                
+
+
 
                 _db.Movies.Remove(movie);
 

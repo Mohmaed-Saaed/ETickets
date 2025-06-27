@@ -32,7 +32,7 @@ namespace ETickets.Areas.Admin.Controllers
 
             if (_db.Actors.Any(a => a.Id == id))
             {
-                actor = _db.Actors.FirstOrDefault(a => a.Id == id);
+                actor = _db.Actors.First(a => a.Id == id);
             }
             return View(actor);
         }
@@ -57,12 +57,17 @@ namespace ETickets.Areas.Admin.Controllers
 
                 if (actorDb is not null)
                 {
-                    var oldfilePathWithImage = Path.Combine(filePath, actorDb.ProfilePicture);
 
-                    if (System.IO.File.Exists(oldfilePathWithImage))
+                    if(actorDb.ProfilePicture is not null)
                     {
-                        System.IO.File.Delete(oldfilePathWithImage);
+                        var oldfilePathWithImage = Path.Combine(filePath, actorDb.ProfilePicture);
+
+                        if (System.IO.File.Exists(oldfilePathWithImage))
+                        {
+                            System.IO.File.Delete(oldfilePathWithImage);
+                        }
                     }
+               
                 }
 
                 actor.ProfilePicture = fileName;
@@ -99,7 +104,7 @@ namespace ETickets.Areas.Admin.Controllers
                     }
                 }
 
-                _db.Remove(_db.Actors.FirstOrDefault(c => c.Id == id));
+                _db.Remove(_db.Actors.First(c => c.Id == id));
 
                 _db.SaveChanges();
             }
