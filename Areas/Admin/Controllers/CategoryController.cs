@@ -1,6 +1,7 @@
 ﻿using ETickets.Data;
 using ETickets.Models;
 using ETickets.ModelView.Admin;
+using ETickets.Repositry;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ETickets.Areas.Admin.Controllers
@@ -9,27 +10,29 @@ namespace ETickets.Areas.Admin.Controllers
     [Area("Admin")]
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly CategoryRepository _categoryRepository;
 
         public CategoryController(ApplicationDbContext db)
         {
-            _db = db;
+            _categoryRepository = new(db);
         }
+
+
         public IActionResult Index()
         {
 
-            var category = _db.Categories.ToList();
+            var category = _categoryRepository.Get();
+
             return View(category);
         }
         [HttpGet]
         public IActionResult Save(int? id)
         {
-            Category category = new Category();
+        
+            
+            Category  category = _categoryRepository.GetOne(x => x.Id == id) ?? new Category();
+            
 
-            if (_db.Categories.Any(a => a.Id == id))
-            {
-                category = _db.Categories.FirstOrDefault(a => a.Id == id);
-            }
 
             return View(category);
         }
@@ -40,22 +43,21 @@ namespace ETickets.Areas.Admin.Controllers
 
             if(category.Id != 0)
             {
-                _db.Categories.Update(category);
+               _categoryRepository.Update(category);
             } else
             {
-                _db.Categories.Add(category);
+                _categoryRepository.Create(category);
             }
-            _db.SaveChanges();
+
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Delete(int id)
         {
-            var Category = _db.Categories.FirstOrDefault(c => c.Id == id);
+            var Category =  _categoryRepository.GetOne(c => c.Id == id);
 
             if (Category is not null) {
-                _db.Remove(Category);
-                _db.SaveChanges();
+                _categoryRepository.Delete(Category);
              }
 
             return RedirectToAction(nameof(Index));
