@@ -2,6 +2,7 @@
 using ETickets.Models;
 using ETickets.ModelView.Admin;
 using ETickets.Repositry;
+using ETickets.Repositry.IRepositry;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ETickets.Areas.Admin.Controllers
@@ -10,11 +11,11 @@ namespace ETickets.Areas.Admin.Controllers
     [Area("Admin")]
     public class CategoryController : Controller
     {
-        private readonly CategoryRepository _categoryRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public CategoryController(ApplicationDbContext db)
+        public CategoryController(ICategoryRepository categoryRepository)
         {
-            _categoryRepository = new(db);
+            _categoryRepository = categoryRepository;
         }
 
 

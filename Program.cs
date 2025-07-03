@@ -1,4 +1,7 @@
 using ETickets.Data;
+using ETickets.Models;
+using ETickets.Repositry;
+using ETickets.Repositry.IRepositry;
 using Microsoft.EntityFrameworkCore;
 
 namespace ETickets
@@ -12,6 +15,11 @@ namespace ETickets
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+            builder.Services.AddScoped<ICinemaRepository , CinemaRepository>();
+            builder.Services.AddScoped<IMovieDisplayStateRepository , MovieDisplayStateRepository>();
+            builder.Services.AddScoped<ICategoryRepository , CategoryRepository>();
+
+
 
             var app = builder.Build();
 

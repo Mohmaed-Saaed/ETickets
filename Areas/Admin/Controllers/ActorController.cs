@@ -1,5 +1,8 @@
 ﻿using ETickets.Data;
+using ETickets.Helpers;
 using ETickets.Models;
+using ETickets.Repositry;
+using ETickets.Repositry.IRepositry;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,19 +11,17 @@ namespace ETickets.Areas.Admin.Controllers
     [Area("Admin")]
     public class ActorController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IActorRepository _ActorRepository;
 
 
-        public ActorController(ApplicationDbContext db , IWebHostEnvironment webHostEnvironment)
+        public ActorController(IActorRepository ActorRepository)
         {
-            _db = db;
-            _webHostEnvironment = webHostEnvironment;
+            _ActorRepository = ActorRepository;
         }
         public IActionResult Index()
         {
 
-            var Actors = _db.Actors.ToList();
+            var Actors = _ActorRepository.Get();
             return View(Actors);
         }
 
@@ -28,85 +29,59 @@ namespace ETickets.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Save(int id)
         {
-            Actor actor = new Actor();
+            Actor actor = _ActorRepository.GetOne(x => x.Id == id);
 
-            if (_db.Actors.Any(a => a.Id == id))
+            if (actor is not null)
             {
-                actor = _db.Actors.First(a => a.Id == id);
-            }
             return View(actor);
+            }
+
+            return NotFound();
         }
 
         [HttpPost]
         public IActionResult Save(Actor actor, IFormFile ProfilePicture)
         {
-            var actorDb = _db.Actors.AsNoTracking().FirstOrDefault(a => a.Id == actor.Id);
+            var actorDb = _ActorRepository.GetOne(x => x.Id == actor.Id , null , true);
 
             if (ProfilePicture is not null)
             {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(ProfilePicture.FileName);
+                FileSaveResult file = _ActorRepository.SaveFile(ProfilePicture);
 
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\cast\\");
-
-                var filePathWithImage = Path.Combine(filePath, fileName);
-
-                using (var stream = System.IO.File.Create(filePathWithImage))
+                if (actorDb is not null && file.FilePath is not null)
                 {
-                    ProfilePicture.CopyTo(stream);
+                    _ActorRepository.RemoveOldFile(actorDb , file.FilePath);
                 }
 
-                if (actorDb is not null)
-                {
-
-                    if(actorDb.ProfilePicture is not null)
-                    {
-                        var oldfilePathWithImage = Path.Combine(filePath, actorDb.ProfilePicture);
-
-                        if (System.IO.File.Exists(oldfilePathWithImage))
-                        {
-                            System.IO.File.Delete(oldfilePathWithImage);
-                        }
-                    }
-               
-                }
-
-                actor.ProfilePicture = fileName;
+                actor.ProfilePicture = file.FileName;
             }
 
             if (actor.Id != 0)
             {
-                _db.Actors.Update(actor);
+                _ActorRepository.Update(actor);
             }
             else
             {
-                _db.Actors.Add(actor);
+                _ActorRepository.Create(actor);
             }
-            _db.SaveChanges();
 
             return RedirectToAction(nameof(Index));
 
         }
         public IActionResult Delete(int id)
         {
-            if (_db.Actors.Any(a => a.Id == id))
-            {
-                var actor = _db.Actors.AsNoTracking().FirstOrDefault(a => a.Id == id);
+       
+            var actor = _ActorRepository.GetOne(x => x.Id == id);
 
-                if(actor?.ProfilePicture is not null)
+            if (actor is not null) {
+
+
+                if (actor?.ProfilePicture is not null)
                 {
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\cast\\");
-
-                    var oldfilePathWithImage = Path.Combine(filePath, actor.ProfilePicture);
-
-                    if (System.IO.File.Exists(oldfilePathWithImage))
-                    {
-                        System.IO.File.Delete(oldfilePathWithImage);
-                    }
+                    _ActorRepository.RemoveOldFile(actor, _ActorRepository.FilePath());
                 }
 
-                _db.Remove(_db.Actors.First(c => c.Id == id));
-
-                _db.SaveChanges();
+                _ActorRepository.Delete(actor);
             }
 
             return RedirectToAction(nameof(Index));

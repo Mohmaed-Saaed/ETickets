@@ -1,0 +1,63 @@
+﻿@model IEnumerable<Cinema>
+
+@{
+    ViewData["Title"] = "Cinema";
+}
+
+<div class="p-3">
+
+        <div class="d-flex justify-content-between">
+        <h1>Cinema</h1>
+
+        <p>
+            <a asp-action="Save" class="btn btn-primary">Add</a>
+        </p>
+        </div>
+
+    <div class="table-responsive">
+        <table id="CinemaTable" class="table table-striped  table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th width="90%">
+                        Name
+                    </th>
+                    <th width="10%">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.Name
+                        </td>
+                        <td>
+                            <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">Edit</a> |
+                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@item.Id" data-name="@item.Name" >Delete </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+        
+<partial name="Delete" />
+
+@section Scripts {
+    <script>
+            $('#confirmDeleteModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+
+                var cinemaId = button.data('id');
+                var cinemaName = button.data('name');
+
+                $(this).find('#cinemaName').text(cinemaName);
+                $(this).find('#cinemaIdToDelete').val(cinemaId);
+            });
+
+            $('#confirmDeleteButton').on('click', function () {
+                $('#deleteCinemaForm').submit();
+            });
+    </script>
+}

@@ -125,7 +125,7 @@ namespace ETickets.Areas.Admin.Controllers
                 else
                     {
                         movieVm.Movie.ImgUrl = MovieDb.ImgUrl;
-                     }
+                    }
                 }
             }
 
@@ -183,10 +183,7 @@ namespace ETickets.Areas.Admin.Controllers
                 if(movieImages is not null && movieImages.Count > 0)
                 {
 
-
                     var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movies\\");
-
-
 
                     foreach(var image in movieImages)
                     {
