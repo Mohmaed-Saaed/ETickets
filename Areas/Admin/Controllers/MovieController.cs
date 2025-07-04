@@ -83,14 +83,14 @@ namespace ETickets.Areas.Admin.Controllers
 
                             FileHelper.RemoveFile(MovieDb.ImgUrl, "movies");
 
+                    movieVm.Movie.ImgUrl = null;
+                    } else
+                    {
+                        movieVm.Movie.ImgUrl = MovieDb.ImgUrl;
                     }
 
-                    movieVm.Movie.ImgUrl = null;
                 }
-                else
-                {
-                    movieVm.Movie.ImgUrl = MovieDb.ImgUrl;
-                }
+
             }
         
             if (movieVm.Movie.Id != 0)
@@ -134,7 +134,7 @@ namespace ETickets.Areas.Admin.Controllers
                         }
                     }
 
-                    _MovieRepository.SaveRangeMovieImage(movieImages);
+                    _MovieRepository.RemoveRangeMovieImage(movieImages);
 
                 }
             }

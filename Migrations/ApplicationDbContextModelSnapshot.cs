@@ -60,7 +60,7 @@ namespace ETickets.Migrations
                     b.HasKey("Id")
                         .HasName("PK__Actors__3214EC07D759252C");
 
-                    b.ToTable("Actors");
+                    b.ToTable("Actors", (string)null);
                 });
 
             modelBuilder.Entity("ETickets.Models.ActorMovie", b =>
@@ -75,7 +75,7 @@ namespace ETickets.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("ActorMovies");
+                    b.ToTable("ActorMovies", (string)null);
                 });
 
             modelBuilder.Entity("ETickets.Models.Category", b =>
@@ -95,7 +95,7 @@ namespace ETickets.Migrations
                     b.HasKey("Id")
                         .HasName("PK__Categori__3214EC07B8534E97");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("ETickets.Models.Cinema", b =>
@@ -129,7 +129,7 @@ namespace ETickets.Migrations
                     b.HasKey("Id")
                         .HasName("PK__Cinemas__3214EC07DC1EFB74");
 
-                    b.ToTable("Cinemas");
+                    b.ToTable("Cinemas", (string)null);
                 });
 
             modelBuilder.Entity("ETickets.Models.Movie", b =>
@@ -192,7 +192,7 @@ namespace ETickets.Migrations
 
                     b.HasIndex("MovieDisplayStateId");
 
-                    b.ToTable("Movies");
+                    b.ToTable("Movies", (string)null);
                 });
 
             modelBuilder.Entity("ETickets.Models.MovieDisplayState", b =>
@@ -209,7 +209,7 @@ namespace ETickets.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MovieDisplayStates");
+                    b.ToTable("MovieDisplayStates", (string)null);
                 });
 
             modelBuilder.Entity("ETickets.Models.MovieImage", b =>
@@ -230,7 +230,7 @@ namespace ETickets.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("MovieImages");
+                    b.ToTable("MovieImages", (string)null);
                 });
 
             modelBuilder.Entity("ETickets.Models.ActorMovie", b =>

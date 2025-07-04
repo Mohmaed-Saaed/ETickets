@@ -1,8 +1,6 @@
 ﻿using ETickets.Data;
 using ETickets.Models;
 using ETickets.Repositry.IRepositry;
-using NPOI.SS.Formula.Functions;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace ETickets.Repositry
