@@ -1,7 +1,12 @@
 ﻿using ETickets.Data;
+using ETickets.Helpers;
 using ETickets.Migrations;
 using ETickets.Models;
 using ETickets.ModelView.Admin;
+using ETickets.Repositry;
+using ETickets.Repositry.IRepositry;
+using ETickets.Servies;
+using ETickets.Servies.IServies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,15 +18,25 @@ namespace ETickets.Areas.Admin.Controllers
     public class MovieController : Controller
     {
 
-        private readonly ApplicationDbContext _db;
+        private readonly IMovieRepository _MovieRepository;
+        private readonly IActorRepository _ActorRepository;
+        private readonly IActorMovieRepository _ActorMovieRepository;
 
-        public MovieController(ApplicationDbContext db)
+        private readonly IMovieAdminSaveService _MovieAdminSaveService;
+
+        public MovieController(IMovieRepository movieRepository,
+                               IActorRepository actorRepository,
+                               IActorMovieRepository actorMovieRepository,
+                               IMovieAdminSaveService movieAdminSaveService)
         {
-            _db = db;
+            _MovieRepository = movieRepository;
+            _ActorRepository = actorRepository;
+            _ActorMovieRepository = actorMovieRepository;
+            _MovieAdminSaveService = movieAdminSaveService;
         }
         public IActionResult Index()
         {
-            var movies = _db.Movies.ToList();
+            var movies = _MovieRepository.Get();
 
             return View(movies);
         }
@@ -33,117 +48,59 @@ namespace ETickets.Areas.Admin.Controllers
                 return Json(new { status = false, message = "Bad request" });
             }
 
-            var actorData = _db.Actors.Where(x => x.Id == id)
-                .Select(x => new { image = Url.Content("~/images/cast/") + x.ProfilePicture, name = $"{x.FirstName} {x.LastName}", id }).FirstOrDefault();
+            var actorData = _ActorRepository.Get(x => x.Id == id).Select(x => new { image = Url.Content("~/images/cast/") + x.ProfilePicture, name = $"{x.FirstName} {x.LastName}", id }).FirstOrDefault();
 
             return Json(new { status = true, actorData });
         }
 
         public IActionResult Save(int id)
         {
-            Movie movie = new Movie { EndDate = DateTime.Now, StartDate = DateTime.Now };
+            var adminMovieIndexVM = _MovieAdminSaveService.AdminMovieSaveVM(id);
 
-            if (_db.Movies.Any(m => m.Id == id))
-            {
-                movie = _db.Movies.FirstOrDefault(m => m.Id == id);
-            }
-            ;
-            var selectedActorIds = _db.ActorMovies
-             .Where(am => am.MovieId == id)
-             .Select(am => am.ActorId)
-             .ToList();
-
-            AdminMovieSaveVM adminMovieIndexVM = new AdminMovieSaveVM()
-            {
-                MovieStatus = _db.MovieDisplayStates.Select(x => new SelectListItem { Text = x.Status, Value = x.Id.ToString() }).ToList(),
-
-                Categories = _db.Categories.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() }).ToList(),
-
-                Cinemas = _db.Cinemas.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() }).ToList(),
-
-                Actors = _db.Actors.Select(x => new SelectListItem { Text = $"{x.FirstName} {x.LastName}", Value = x.Id.ToString() }).ToList(),
-
-                ActorsSelectList = _db.ActorMovies.Where(x => x.MovieId == id)
-                .Select(x => new SelectListItem
-                {
-                    Text = $"{x.Actor.FirstName} {x.Actor.LastName}",
-                    Value = x.Actor.Id
-                   .ToString(),
-                    Selected = selectedActorIds.Contains(x.ActorId)
-                }).ToList(),
-
-                Movie = movie,
-
-                ActorIds = selectedActorIds,
-                SubImages = _db.MovieImages.Where(x => x.MovieId == id).ToList()
-            };
             return View(adminMovieIndexVM);
         }
         [HttpPost]
+
         public IActionResult Save(AdminMovieSaveVM movieVm)
         {
             if (movieVm.ImgFile is not null)
             {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(movieVm.ImgFile.FileName);
+                FileSaveResult file = FileHelper.SaveFile(movieVm.ImgFile , "movies");
 
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movies\\");
-
-                var filePathWithFileName = Path.Combine(filePath, fileName);
-
-                using (var createFile = System.IO.File.Create(filePathWithFileName))
-                {
-                    movieVm.ImgFile.CopyTo(createFile);
-                }
-
-                movieVm.Movie.ImgUrl = fileName;
+                movieVm.Movie.ImgUrl = file.FileName;
             }
             else
             {
-                var MovieDb = _db.Movies.AsNoTracking().FirstOrDefault(m => m.Id == movieVm.Movie.Id);
+                var MovieDb = _MovieRepository.GetOne(x => x.Id == movieVm.Movie.Id, null, true);
 
                 if (MovieDb is not null)
                 {
+
                     if (movieVm.IsMainImageRemoved)
-                {
-
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movies\\");
-
-                    if (MovieDb.ImgUrl is not null)
                     {
-                        var filePathWithFileName = Path.Combine(filePath, MovieDb.ImgUrl);
 
-                        if (System.IO.File.Exists(filePathWithFileName))
-                        {
-                            System.IO.File.Delete(filePathWithFileName);
-                        }
+                        if (MovieDb.ImgUrl is not null)
+
+                            FileHelper.RemoveFile(MovieDb.ImgUrl, "movies");
+
                     }
+
                     movieVm.Movie.ImgUrl = null;
-
-
-          
                 }
                 else
-                    {
-                        movieVm.Movie.ImgUrl = MovieDb.ImgUrl;
-                    }
+                {
+                    movieVm.Movie.ImgUrl = MovieDb.ImgUrl;
                 }
             }
-
+        
             if (movieVm.Movie.Id != 0)
             {
-                _db.Movies.Update(movieVm.Movie);
-
-                _db.SaveChanges();
+                _MovieRepository.Update(movieVm.Movie);
             }
             else
             {
-                _db.Movies.Add(movieVm.Movie);
-
-                _db.SaveChanges();
+                _MovieRepository.Create(movieVm.Movie);
             }
-
-
-
 
             if(movieVm.ImgFiles is not null && movieVm.ImgFiles.Count > 0)
             {
@@ -153,58 +110,33 @@ namespace ETickets.Areas.Admin.Controllers
                 foreach (var movieImg in movieVm.ImgFiles)
                 {
 
-                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(movieImg.FileName);
+                 var file = FileHelper.SaveFile(movieImg , "movies");
 
-                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movies\\");
-
-                        var filePathWithFileName = Path.Combine(filePath, fileName);
-
-                        using (var createFile = System.IO.File.Create(filePathWithFileName))
-                        {
-                            movieImg.CopyTo(createFile);
-                        }
-
-                    movieImages.Add(new MovieImage { MovieId = movieVm.Movie.Id, ImageUrl = fileName });
+                 movieImages.Add(new MovieImage { MovieId = movieVm.Movie.Id, ImageUrl = file.FileName });
 
                 }
-
-                _db.MovieImages.AddRange(movieImages);
-
-                _db.SaveChanges();
-
+                _MovieRepository.SaveRangeMovieImage(movieImages);
+                
             }
-
 
             if(movieVm.SubImagesRemoved is not null && movieVm.SubImagesRemoved.Count > 0)
             {
-                var movieImages = _db.MovieImages.Where(m => movieVm.SubImagesRemoved.Contains(m.Id)).ToList();
+                var movieImages = _MovieRepository.GetMovieImages(m => movieVm.SubImagesRemoved.Contains(m.Id));
 
-
-                if(movieImages is not null && movieImages.Count > 0)
+                if(movieImages is not null && movieImages.Count() > 0)
                 {
-
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movies\\");
 
                     foreach(var image in movieImages)
                     {
                         if (image.ImageUrl is not null)
                         {
-                            var filePathWithFileName = Path.Combine(filePath, image.ImageUrl);
-
-                            if (System.IO.File.Exists(filePathWithFileName))
-                            {
-                                System.IO.File.Delete(filePathWithFileName);
-                            }
+                            FileHelper.RemoveFile(image.ImageUrl, "movies");
                         }
                     }
-     
-                    _db.MovieImages.RemoveRange(movieImages);
 
-                    _db.SaveChanges();
+                    _MovieRepository.SaveRangeMovieImage(movieImages);
 
                 }
-
-
             }
 
             List<ActorMovie> actorMovies = new();
@@ -212,92 +144,72 @@ namespace ETickets.Areas.Admin.Controllers
             if (movieVm.Movie.Id != 0)
             {
 
-                var actorMovie = _db.ActorMovies.Where(a => a.MovieId == movieVm.Movie.Id).ToList();
+                var actorMovie = _ActorMovieRepository.Get(a => a.MovieId == movieVm.Movie.Id);
 
-                if (actorMovie.Count > 0)
+                if (actorMovie.Count() > 0)
                 {
-                    _db.ActorMovies.RemoveRange(actorMovie);
-
-                    _db.SaveChanges();
+                    _ActorMovieRepository.RemoveRange(actorMovie);
                 }
 
                 if (movieVm.ActorIds is not null)
                 {
                     foreach (var actorsId in movieVm.ActorIds)
                     {
-                        actorMovies.Add(
-                            new ActorMovie { ActorId = actorsId, MovieId = movieVm.Movie.Id }
-                            );
+                        _ActorMovieRepository.Create(new ActorMovie { ActorId = actorsId, MovieId = movieVm.Movie.Id });
                     }
                 }
 
                 if (actorMovies.Count > 0)
                 {
-                    _db.ActorMovies.AddRange(actorMovies);
+                    _ActorMovieRepository.AddRange(actorMovies);
                 }
 
             }
             else
             {
-                foreach (var actorsId in movieVm.ActorIds)
+                if(movieVm.ActorIds is not null)
                 {
-                    actorMovies.Add(
-                        new ActorMovie { ActorId = actorsId, MovieId = movieVm.Movie.Id }
-                        );
+                    foreach (var actorsId in movieVm.ActorIds)
+                    {
+                        _ActorMovieRepository.Create(new ActorMovie { ActorId = actorsId, MovieId = movieVm.Movie.Id });
+                    }
                 }
-
-                _db.ActorMovies.AddRange(actorMovies);
+                _ActorMovieRepository.AddRange(actorMovies);
             }
-
-            _db.SaveChanges();
 
             return RedirectToAction(nameof(Index));
         }
+
         public IActionResult Delete(int id)
         {
-            if (_db.Movies.Any(m => m.Id == id))
-            {
-                var movie = _db.Movies.First(m => m.Id == id);
 
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movies\\");
+            var movie = _MovieRepository.GetOne(x => x.Id == id);
+
+            if (movie is not null)
+            {
                 if (movie.ImgUrl is not null)
                 {
-
-                    var filePathWithFileName = Path.Combine(filePath, movie.ImgUrl);
-
-                    if (System.IO.File.Exists(filePathWithFileName))
-                    {
-                        System.IO.File.Delete(filePathWithFileName);
-                    }
+                    FileHelper.RemoveFile(movie.ImgUrl, "movies");
                 }
 
-                var movieImages = _db.MovieImages.Where(m => m.MovieId == id).ToList();
+                var movieImages = _MovieRepository.GetMovieImages(x => x.MovieId == id);
 
 
-                if(movieImages is not null && movieImages.Count > 0)
+                if (movieImages is not null && movieImages.Count() > 0)
                 {
-
-                    foreach(var movieImg in movieImages)
+                    foreach (var movieImg in movieImages)
                     {
 
-                        if(movieImg.ImageUrl is not null)
+                        if (movieImg.ImageUrl is not null)
                         {
-                            var filePathWithFileName = Path.Combine(filePath, movieImg.ImageUrl);
+                            FileHelper.RemoveFile(movieImg.ImageUrl, "movies");
 
-                            if (System.IO.File.Exists(filePathWithFileName))
-                            {
-                                System.IO.File.Delete(filePathWithFileName);
-                            }
                         }
                     }
-                    _db.MovieImages.RemoveRange(movieImages);
+                    _MovieRepository.RemoveRangeMovieImage(movieImages);
 
-                    _db.SaveChanges();
                 }
-                _db.Movies.Remove(movie);
-
-                _db.SaveChanges();
-
+                _MovieRepository.Delete(movie);
             }
 
             return RedirectToAction(nameof(Index));

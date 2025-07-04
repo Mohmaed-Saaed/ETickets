@@ -1,10 +1,7 @@
-﻿using ETickets.Data;
-using ETickets.Helpers;
+﻿using ETickets.Helpers;
 using ETickets.Models;
-using ETickets.Repositry;
 using ETickets.Repositry.IRepositry;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ETickets.Areas.Admin.Controllers
 {
@@ -29,7 +26,7 @@ namespace ETickets.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Save(int id)
         {
-            Actor actor = _ActorRepository.GetOne(x => x.Id == id);
+            Actor actor = _ActorRepository.GetOne(x => x.Id == id) ?? new Actor();
 
             if (actor is not null)
             {
@@ -46,11 +43,11 @@ namespace ETickets.Areas.Admin.Controllers
 
             if (ProfilePicture is not null)
             {
-                FileSaveResult file = _ActorRepository.SaveFile(ProfilePicture);
+                FileSaveResult file = FileHelper.SaveFile(ProfilePicture , "cast");
 
-                if (actorDb is not null && file.FilePath is not null)
+                if (actorDb is not null && file.FileName is not null)
                 {
-                    _ActorRepository.RemoveOldFile(actorDb , file.FilePath);
+                    FileHelper.RemoveFile(file.FileName, "cast");
                 }
 
                 actor.ProfilePicture = file.FileName;
@@ -75,13 +72,13 @@ namespace ETickets.Areas.Admin.Controllers
 
             if (actor is not null) {
 
+                _ActorRepository.Delete(actor);
 
                 if (actor?.ProfilePicture is not null)
                 {
-                    _ActorRepository.RemoveOldFile(actor, _ActorRepository.FilePath());
+                    FileHelper.RemoveFile(actor.ProfilePicture, "cast");
                 }
 
-                _ActorRepository.Delete(actor);
             }
 
             return RedirectToAction(nameof(Index));

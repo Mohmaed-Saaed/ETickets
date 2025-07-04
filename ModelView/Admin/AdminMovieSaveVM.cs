@@ -17,7 +17,7 @@ namespace ETickets.ModelView.Admin
         public Movie Movie { get; set; } = new Movie();  
         public Actor Actor { get; set; } = new Actor();  
         public MovieImage? MovieImage { get; set; }   
-        public List<MovieImage>  SubImages { get; set; } = new List<MovieImage>();  
+        public IEnumerable<MovieImage>  SubImages { get; set; } = new List<MovieImage>();  
 
         public bool IsMainImageRemoved { get; set; }
 

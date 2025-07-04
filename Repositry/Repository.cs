@@ -1,9 +1,7 @@
 ﻿using ETickets.Data;
-using ETickets.Models;
 using ETickets.Repositry.IRepositry;
-using MathNet.Numerics.Statistics.Mcmc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace ETickets.Repositry
@@ -20,10 +18,8 @@ namespace ETickets.Repositry
             _entity = _db.Set<T>();
         }
 
-        public Repository()
-        {
-         
-        }
+
+
         public bool Create(T entity)
         {
             try
@@ -68,7 +64,7 @@ namespace ETickets.Repositry
         }
         public IEnumerable<T> Get(Expression<Func<T, bool>>? expression = null,
             Expression<Func<T, object>>[]? include = null,
-            bool tracked = false
+             bool tracked = false
             )
         {
 
@@ -92,10 +88,52 @@ namespace ETickets.Repositry
             {
                 entities = entities.AsNoTracking();
             }
+
             return entities.ToList();
         }
 
+        public bool SaveRange(T entity)
+        {
+            try
+            {
+                _db.AddRange(entity);
+                _db.SaveChanges();
+                return true;
+            }
+            catch (Exception ex) {
+                return false;
+            }
+        }
 
+
+        public bool RemoveRange(IEnumerable<T>  entity)
+        {
+            try
+            {
+                _db.RemoveRange(entity);
+                _db.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+
+                return false;
+            }
+        }
+
+        public bool AddRange(IEnumerable<T> entity)
+        {
+            try
+            {
+                _db.AddRange(entity);
+                _db.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
 
         public T? GetOne(Expression<Func<T, bool>>? expression = null,
             Expression<Func<T, object>>[]? include = null,

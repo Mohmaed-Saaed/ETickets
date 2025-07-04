@@ -1,7 +1,8 @@
 using ETickets.Data;
-using ETickets.Models;
 using ETickets.Repositry;
 using ETickets.Repositry.IRepositry;
+using ETickets.Servies;
+using ETickets.Servies.IServies;
 using Microsoft.EntityFrameworkCore;
 
 namespace ETickets
@@ -18,8 +19,10 @@ namespace ETickets
             builder.Services.AddScoped<ICinemaRepository , CinemaRepository>();
             builder.Services.AddScoped<IMovieDisplayStateRepository , MovieDisplayStateRepository>();
             builder.Services.AddScoped<ICategoryRepository , CategoryRepository>();
-
-
+            builder.Services.AddScoped<IActorRepository, ActosRepository>();
+            builder.Services.AddScoped<IActorMovieRepository, AcotMovieRepository>();
+            builder.Services.AddScoped<IMovieRepository, MovieRepository>();
+            builder.Services.AddTransient<IMovieAdminSaveService, MovieAdminSaveService>();
 
             var app = builder.Build();
 

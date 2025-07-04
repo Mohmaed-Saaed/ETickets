@@ -14,7 +14,6 @@ namespace ETickets.Areas.Admin.Controllers
             _MovieDisplayStateRepository = MovieDisplayState;
         }
 
-
         public IActionResult Index()
         {
             var MovieDisplayState = _MovieDisplayStateRepository.Get();
