@@ -80,6 +80,8 @@ namespace ETickets.Areas.Admin.Controllers
                     {
 
                         if (MovieDb.ImgUrl is not null)
+                             
+
 
                             FileHelper.RemoveFile(MovieDb.ImgUrl, "movies");
 
