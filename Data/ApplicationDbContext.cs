@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using ETickets.Models;
+﻿using ETickets.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
+using ETickets.ModelView;
 
 namespace ETickets.Data;
 
-    public partial class ApplicationDbContext : DbContext
+    public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext()
-        {
-        }
-
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -34,6 +29,7 @@ namespace ETickets.Data;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+        base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Actor>(entity =>
             {
                 entity.HasKey(e => e.Id).HasName("PK__Actors__3214EC07D759252C");
@@ -130,12 +126,12 @@ namespace ETickets.Data;
 
                 entity.HasOne(d => d.MovieDisplayState).WithMany(p => p.Movies)
                       .HasForeignKey(d => d.MovieDisplayStateId);
-
             });
 
             OnModelCreatingPartial(modelBuilder);
         }
-
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+public DbSet<ETickets.ModelView.RegisterVM> RegisterVM { get; set; } = default!;
     }
 
