@@ -55,10 +55,12 @@ namespace ETickets.Areas.Admin.Controllers
 
             if (actor.Id != 0)
             {
+                TempData["success"] = "Actor added successfully";
                 _ActorRepository.Update(actor);
             }
             else
             {
+                TempData["success"] = "Actor added successfully";
                 _ActorRepository.Create(actor);
             }
 

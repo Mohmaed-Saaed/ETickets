@@ -50,7 +50,8 @@ namespace ETickets.Data;
                     .HasMaxLength(100)
                     .IsUnicode(false);
             });
-
+            
+        
             modelBuilder.Entity<ActorMovie>(entity =>
             {
                 entity.HasKey(e => new { e.ActorId, e.MovieId }); // Define composite primary key
@@ -132,6 +133,5 @@ namespace ETickets.Data;
         }
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-public DbSet<ETickets.ModelView.RegisterVM> RegisterVM { get; set; } = default!;
     }
 

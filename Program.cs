@@ -1,8 +1,11 @@
 using ETickets.Data;
+using ETickets.Models;
 using ETickets.Repositry;
 using ETickets.Repositry.IRepositry;
 using ETickets.Servies;
 using ETickets.Servies.IServies;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace ETickets
@@ -23,6 +26,14 @@ namespace ETickets
             builder.Services.AddScoped<IActorMovieRepository, AcotMovieRepository>();
             builder.Services.AddScoped<IMovieRepository, MovieRepository>();
             builder.Services.AddTransient<IMovieAdminSaveService, MovieAdminSaveService>();
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.Password.RequiredLength = 5;
+
+            }).AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             var app = builder.Build();
 

@@ -1,11 +1,11 @@
 ﻿namespace ETickets;
     public class Global
     {
-     public enum MovieStatus
+        public enum MovieStatus
         {
            Available = 1,
-            Expired = 2,
-            ComingSoon = 3
+           Expired = 2,
+           ComingSoon = 3
         }
 
     }

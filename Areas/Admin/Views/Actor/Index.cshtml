@@ -4,6 +4,7 @@
     ViewData["Title"] = "Actors";
 }
 
+
 <div class="p-3">
 
         <div class="d-flex justify-content-between">
@@ -44,6 +45,20 @@
         
 <partial name="Delete" />
 
+<script src="~/js/toastr.min.js"></script>
+
+@if (TempData["ActorUpdated"] != null)
+{
+
+
+    <script>
+        toastr.success("@TempData["ActorUpdated"].ToString()");
+    </script>
+
+}
+
+
+
 @section Scripts {
     <script>
             $('#confirmDeleteModal').on('show.bs.modal', function (event) {
@@ -59,5 +74,7 @@
             $('#confirmDeleteButton').on('click', function () {
                 $('#deleteCategoryForm').submit();
             });
+
+
     </script>
 }

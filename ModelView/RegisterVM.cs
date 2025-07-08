@@ -4,12 +4,14 @@ namespace ETickets.ModelView
 {
     public class RegisterVM
     {
-        public int Id { get; set; }
         [Required]
+        [Display(Name = "First name")]
         public string FirstName { get; set; } = null!;
         [Required]
+        [Display(Name = "Last name")]
         public string LastName { get; set; } = null!;
         [Required]
+        [EmailAddress]
         public string Email { get; set; } = null!;
         [Required]
         [DataType(DataType.Password)]
@@ -17,8 +19,12 @@ namespace ETickets.ModelView
         [Required]
         [DataType(DataType.Password)]
         [Compare(nameof(Password))]
+        [Display(Name = "Confirm password")]
         public string ConfirmPassword { get; set; } = null!;
         [Required]
-        public string Username { get; set; } = null!;
+        public string UserName { get; set; } = null!;
+        [Required]
+        [Phone]
+        public string PhoneNumber { get; set; } = null!;
     }
 }
