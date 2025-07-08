@@ -1,0 +1,14 @@
+﻿
+<div class="container">
+    <h1>
+        <span>Your Email has been confirmed click</span>
+        <a asp-action="Login"> Here </a>
+        <span>to login</span>
+    </h1>
+
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
