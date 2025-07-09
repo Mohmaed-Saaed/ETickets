@@ -9,7 +9,7 @@ namespace ETickets.ModelView
 
 
         public string UserId { get; set; } = null!;
-        public int OTPNumber { get; set; }
+        public int? OTPNumber { get; set; }
         [DataType(DataType.Password)]
         public string Password { get; set; } = null!;
         [DataType(DataType.Password)]

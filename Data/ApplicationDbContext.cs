@@ -136,8 +136,5 @@ namespace ETickets.Data;
             OnModelCreatingPartial(modelBuilder);
         }
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
-public DbSet<ETickets.ModelView.ResetPasswordVM> ResetPasswordVM { get; set; } = default!;
-
     }
 

@@ -1,9 +1,11 @@
-﻿namespace ETickets.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ETickets.Models
 {
     public class ApplicationUserOTP
     {
         public int Id { get; set; }
-        public string UserId { get; set; } = null!;
+        public string ApplicationUserId { get; set; } = null!;
         public DateTime SendDate { get; set; }
         public int OTPNumber { get; set; }
         public DateTime ValidTo { get; set; }

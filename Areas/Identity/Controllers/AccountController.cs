@@ -5,15 +5,12 @@ using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using NPOI.OpenXmlFormats;
-using System.Threading.Tasks;
 
 namespace ETickets.Areas.Identity.Controllers
 {
     [Area("Identity")]
     public class AccountController : Controller
     {
-
         private readonly UserManager<ApplicationUser> _UserManager;
         private readonly IEmailSender _EmailSender;
         private readonly SignInManager<ApplicationUser> _SignInManager;
@@ -69,7 +66,6 @@ namespace ETickets.Areas.Identity.Controllers
             var link = Url.Action("ConfrimEmail", "Account", new { userId = user.Id, token, area = "Identity" }, Request.Scheme);  // Request.Scheme the protocal
 
             await _EmailSender.SendEmailAsync(user.Email ?? "", "Confirm your account", $"<h1> Confirm your account by clicking <a href='{link}'> here </ a> </ h1>");
-
 
         }
 
@@ -128,8 +124,8 @@ namespace ETickets.Areas.Identity.Controllers
                 }
             }
 
-            TempData["error"] = "User name or email is wrong.";
-            ModelState.AddModelError(string.Empty, "User name or email is wrong.");
+            TempData["error"] = "Username&Email or password wrong.";
+            ModelState.AddModelError(string.Empty, "Username&Email or password wrong.");
             return View(loginVM);
         }
 
@@ -177,39 +173,40 @@ namespace ETickets.Areas.Identity.Controllers
 
             if (user is not null)
             {
+                int numberOfMaxOTPs = 4;
 
-                var userOTPs = _ApplicationUserOTPRepository.Get(X => X.UserId == user.Id).Count();
+                var userOTPs = _ApplicationUserOTPRepository
+                                .Get(X => X.ApplicationUserId == user.Id && X.SendDate.Day == DateTime.UtcNow.Day).Count();
+
+                if(userOTPs > numberOfMaxOTPs)
+                {
+                    TempData["error"] = "You have reached max numbers of OTPs for today.";
+                    return View(forgetPasswordVM);
+                }
 
                 var OTPNumber = new Random().Next(100000, 999999);
 
                 await _EmailSender.SendEmailAsync(user.Email ?? "", "Reset password", $"<h1> This is your OTP number {OTPNumber} to reset your password </ h1>");
 
                 _ApplicationUserOTPRepository.Create(new ApplicationUserOTP
-                {
+                {  
                     OTPNumber = OTPNumber,
                     SendDate = DateTime.UtcNow,
                     ValidTo = DateTime.UtcNow.AddMinutes(30),
                     Status = false,
-                    UserId = user.Id,
+                    ApplicationUserId = user.Id,
                     Reason = "ForgetPassword"
                 });
-
-                TempData["Redirect"] = new Guid().ToString();
-                return RedirectToAction(nameof(ResetPassword), "Account", new { area = "Identity", user.Id }); // This will redirect to ResetPassword with controller and area and the id of the user will be put in the url.
+                var userId = user.Id;
+                return RedirectToAction(nameof(ResetPassword), "Account", new { area = "Identity", userId }); // This will redirect to ResetPassword with controller and area and the id of the user will be put in the url.
             }
+            TempData["error"] = "Wrong Username or email";
             return View();
         }
 
         [HttpGet]
         public async Task<IActionResult> ResetPassword(string userId)
         {
-
-            if (TempData["Redirect"] is null)
-            {
-                return NotFound();
-            }
-
-
             var result = await _UserManager.FindByIdAsync(userId);
 
             if (result is not null)
@@ -228,40 +225,36 @@ namespace ETickets.Areas.Identity.Controllers
 
             if (user is not null)
             {
-                var LastUserOTP = _ApplicationUserOTPRepository.Get(x => x.UserId == user.Id).OrderBy(x => x.Id).LastOrDefault();
+                var LastUserOTP = _ApplicationUserOTPRepository.Get(x => x.ApplicationUserId == user.Id).OrderBy(x => x.Id).LastOrDefault();
 
                 if (LastUserOTP is not null)
                 {
-
                     if (resetPasswordVM.OTPNumber == LastUserOTP.OTPNumber)
                     {
                         if (DateTime.UtcNow <= LastUserOTP.ValidTo && !LastUserOTP.Status)
                         {
-
-                            var token = await _UserManager.GeneratePasswordResetTokenAsync(user);
+                            var token = await _UserManager.GeneratePasswordResetTokenAsync(user); // we get the token for security reasons.So,No one can change user's password without a token.
 
                             var result = await _UserManager.ResetPasswordAsync(user , token, resetPasswordVM.Password);
 
                             if (result.Succeeded)
                             {
+                                LastUserOTP.Status = true;
+                                _ApplicationUserOTPRepository.Update(LastUserOTP);
                                 TempData["success"] = "Password reset.";
-                                return View(nameof(Login));
+                                return RedirectToAction(nameof(Login));
+                                
                             }
                             else
                             {
                                 TempData["error"] = $"{string.Join(", ", result.Errors)}";
                             }
-
-
                         }
-
                     }
-
                     TempData["error"] = "Invalid or Expired OTP";
                     return View(resetPasswordVM);
                 }
             }
-
             return NotFound();
         }
 
