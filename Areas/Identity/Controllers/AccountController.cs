@@ -1,13 +1,12 @@
 ﻿using ETickets.Models;
 using ETickets.ModelView;
+using ETickets.Repositry.IRepositry;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+using NPOI.OpenXmlFormats;
 using System.Threading.Tasks;
-
 
 namespace ETickets.Areas.Identity.Controllers
 {
@@ -18,14 +17,16 @@ namespace ETickets.Areas.Identity.Controllers
         private readonly UserManager<ApplicationUser> _UserManager;
         private readonly IEmailSender _EmailSender;
         private readonly SignInManager<ApplicationUser> _SignInManager;
-        public AccountController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager)
+        private readonly IApplicationUserOTPRepository _ApplicationUserOTPRepository;
+        public AccountController(UserManager<ApplicationUser> userManager, IEmailSender emailSender,
+            SignInManager<ApplicationUser> signInManager,
+            IApplicationUserOTPRepository applicationUserOTPRepository)
         {
             _UserManager = userManager;
             _EmailSender = emailSender;
             _SignInManager = signInManager;
-
+            _ApplicationUserOTPRepository = applicationUserOTPRepository;
         }
-
 
         [HttpGet]
         public IActionResult Register()
@@ -39,6 +40,7 @@ namespace ETickets.Areas.Identity.Controllers
             // autoMapping
             var user = registerVM.Adapt<ApplicationUser>();
 
+
             var result = await _UserManager.CreateAsync(user, registerVM.Password);
 
             if (result.Succeeded)
@@ -46,7 +48,8 @@ namespace ETickets.Areas.Identity.Controllers
                 //Send confirmation email.
                 await SendToken(user);
                 TempData["Success"] = "Confirm your email";
-            } else
+            }
+            else
             {
                 foreach (var error in result.Errors)
                 {
@@ -67,7 +70,7 @@ namespace ETickets.Areas.Identity.Controllers
 
             await _EmailSender.SendEmailAsync(user.Email ?? "", "Confirm your account", $"<h1> Confirm your account by clicking <a href='{link}'> here </ a> </ h1>");
 
-         
+
         }
 
         public async Task<JsonResult> SendEmailConfirmationByUserNameOrEmail(string UserNameOrEmail)
@@ -76,9 +79,9 @@ namespace ETickets.Areas.Identity.Controllers
 
             user ??= await _UserManager.FindByNameAsync(UserNameOrEmail);
 
-            if(user is not null)
+            if (user is not null)
             {
-               await SendToken(user);
+                await SendToken(user);
                 TempData["Success"] = "Confirm your email";
                 return new JsonResult(new { status = true });
             }
@@ -94,12 +97,11 @@ namespace ETickets.Areas.Identity.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginVM loginVM)
-        
-        
         {
+
             var user = await _UserManager.FindByEmailAsync(loginVM.UserNameOrEmail);
 
-            user ??= await _UserManager.FindByNameAsync (loginVM.UserNameOrEmail);
+            user ??= await _UserManager.FindByNameAsync(loginVM.UserNameOrEmail);
 
             if (user is not null)
             {
@@ -107,7 +109,7 @@ namespace ETickets.Areas.Identity.Controllers
 
                 if (result)
                 {
-                    if(!user.EmailConfirmed)
+                    if (!user.EmailConfirmed)
                     {
                         TempData["error"] = "Confirm your email.";
                         loginVM.EmailConfirmed = false;
@@ -128,7 +130,7 @@ namespace ETickets.Areas.Identity.Controllers
 
             TempData["error"] = "User name or email is wrong.";
             ModelState.AddModelError(string.Empty, "User name or email is wrong.");
-            return View(loginVM);            
+            return View(loginVM);
         }
 
         public async Task<IActionResult> ConfrimEmail(string userId, string token)
@@ -147,7 +149,7 @@ namespace ETickets.Areas.Identity.Controllers
                 }
                 else
                 {
-                    TempData["error"] = $"{string.Join(", " ,result.Errors)}";
+                    TempData["error"] = $"{string.Join(", ", result.Errors)}";
                 }
             }
 
@@ -159,12 +161,116 @@ namespace ETickets.Areas.Identity.Controllers
             return View();
         }
 
-        public  new async Task<IActionResult>  SignOut()
+        [HttpGet]
+        public IActionResult ForgetPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgetPassword(ForgetPasswordVM forgetPasswordVM)
+        {
+
+            var user = await _UserManager.FindByEmailAsync(forgetPasswordVM.UserNameOrEmail);
+
+            user ??= await _UserManager.FindByNameAsync(forgetPasswordVM.UserNameOrEmail);
+
+            if (user is not null)
+            {
+
+                var userOTPs = _ApplicationUserOTPRepository.Get(X => X.UserId == user.Id).Count();
+
+                var OTPNumber = new Random().Next(100000, 999999);
+
+                await _EmailSender.SendEmailAsync(user.Email ?? "", "Reset password", $"<h1> This is your OTP number {OTPNumber} to reset your password </ h1>");
+
+                _ApplicationUserOTPRepository.Create(new ApplicationUserOTP
+                {
+                    OTPNumber = OTPNumber,
+                    SendDate = DateTime.UtcNow,
+                    ValidTo = DateTime.UtcNow.AddMinutes(30),
+                    Status = false,
+                    UserId = user.Id,
+                    Reason = "ForgetPassword"
+                });
+
+                TempData["Redirect"] = new Guid().ToString();
+                return RedirectToAction(nameof(ResetPassword), "Account", new { area = "Identity", user.Id }); // This will redirect to ResetPassword with controller and area and the id of the user will be put in the url.
+            }
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(string userId)
+        {
+
+            if (TempData["Redirect"] is null)
+            {
+                return NotFound();
+            }
+
+
+            var result = await _UserManager.FindByIdAsync(userId);
+
+            if (result is not null)
+            {
+
+                return View(new ResetPasswordVM() { UserId = userId });
+            }
+
+            return NotFound();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordVM resetPasswordVM)
+        {
+
+            var user = await _UserManager.FindByIdAsync(resetPasswordVM.UserId);
+
+            if (user is not null)
+            {
+                var LastUserOTP = _ApplicationUserOTPRepository.Get(x => x.UserId == user.Id).OrderBy(x => x.Id).LastOrDefault();
+
+                if (LastUserOTP is not null)
+                {
+
+                    if (resetPasswordVM.OTPNumber == LastUserOTP.OTPNumber)
+                    {
+                        if (DateTime.UtcNow <= LastUserOTP.ValidTo && !LastUserOTP.Status)
+                        {
+
+                            var token = await _UserManager.GeneratePasswordResetTokenAsync(user);
+
+                            var result = await _UserManager.ResetPasswordAsync(user , token, resetPasswordVM.Password);
+
+                            if (result.Succeeded)
+                            {
+                                TempData["success"] = "Password reset.";
+                                return View(nameof(Login));
+                            }
+                            else
+                            {
+                                TempData["error"] = $"{string.Join(", ", result.Errors)}";
+                            }
+
+
+                        }
+
+                    }
+
+                    TempData["error"] = "Invalid or Expired OTP";
+                    return View(resetPasswordVM);
+                }
+            }
+
+            return NotFound();
+        }
+
+        public new async Task<IActionResult> SignOut()
         {
             await _SignInManager.SignOutAsync();
             TempData["seccuess"] = "Signed out.";
             return RedirectToAction("Index", "Home", new { area = "Customer" });
         }
 
-    } 
+    }
 }

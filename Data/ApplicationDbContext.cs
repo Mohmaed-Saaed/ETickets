@@ -50,9 +50,13 @@ namespace ETickets.Data;
                     .HasMaxLength(100)
                     .IsUnicode(false);
             });
-            
-        
-            modelBuilder.Entity<ActorMovie>(entity =>
+
+            modelBuilder.Entity<ApplicationUser>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
+
+        modelBuilder.Entity<ActorMovie>(entity =>
             {
                 entity.HasKey(e => new { e.ActorId, e.MovieId }); // Define composite primary key
 
@@ -119,7 +123,7 @@ namespace ETickets.Data;
 
                 entity.HasOne(d => d.Category).WithMany(p => p.Movies)
                     .HasForeignKey(d => d.CategoryId)
-                    .HasConstraintName("FK__Movies__Category__45F365D3");
+                        .HasConstraintName("FK__Movies__Category__45F365D3");
 
                 entity.HasOne(d => d.Cinema).WithMany(p => p.Movies)
                     .HasForeignKey(d => d.CinemaId)
@@ -132,6 +136,8 @@ namespace ETickets.Data;
             OnModelCreatingPartial(modelBuilder);
         }
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+public DbSet<ETickets.ModelView.ResetPasswordVM> ResetPasswordVM { get; set; } = default!;
 
     }
 

@@ -73,7 +73,7 @@ namespace ETickets.Repositry
             if (expression is not null)
             {
                 entities = entities.Where(expression);
-                
+
             }
 
             if (include is not null)
@@ -100,13 +100,14 @@ namespace ETickets.Repositry
                 _db.SaveChanges();
                 return true;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return false;
             }
         }
 
 
-        public bool RemoveRange(IEnumerable<T>  entity)
+        public bool RemoveRange(IEnumerable<T> entity)
         {
             try
             {

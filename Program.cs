@@ -25,15 +25,18 @@ namespace ETickets
             builder.Services.AddScoped<IActorRepository, ActosRepository>();
             builder.Services.AddScoped<IActorMovieRepository, AcotMovieRepository>();
             builder.Services.AddScoped<IMovieRepository, MovieRepository>();
+            builder.Services.AddTransient<IApplicationUserOTPRepository, ApplicationUserOTPRepository>();
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
+
             builder.Services.AddTransient<IMovieAdminSaveService, MovieAdminSaveService>();
+
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 5;
-
+                options.User.RequireUniqueEmail = true;
             }).AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-            builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             var app = builder.Build();
 
