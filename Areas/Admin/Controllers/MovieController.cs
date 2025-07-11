@@ -1,15 +1,12 @@
-﻿using ETickets.Data;
-using ETickets.Helpers;
-using ETickets.Migrations;
+﻿using ETickets.Helpers;
 using ETickets.Models;
 using ETickets.ModelView.Admin;
-using ETickets.Repositry;
 using ETickets.Repositry.IRepositry;
-using ETickets.Servies;
 using ETickets.Servies.IServies;
+using ETickets.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace ETickets.Areas.Admin.Controllers
 {
@@ -34,13 +31,14 @@ namespace ETickets.Areas.Admin.Controllers
             _ActorMovieRepository = actorMovieRepository;
             _MovieAdminSaveService = movieAdminSaveService;
         }
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin},{SD.Employee}")]
         public IActionResult Index()
         {
             var movies = _MovieRepository.Get();
 
             return View(movies);
         }
-
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public JsonResult GetActorData(int id)
         {
             if (id == 0)
@@ -52,7 +50,7 @@ namespace ETickets.Areas.Admin.Controllers
 
             return Json(new { status = true, actorData });
         }
-
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Save(int id)
         {
             var adminMovieIndexVM = _MovieAdminSaveService.AdminMovieSaveVM(id);
@@ -60,7 +58,7 @@ namespace ETickets.Areas.Admin.Controllers
             return View(adminMovieIndexVM);
         }
         [HttpPost]
-
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Save(AdminMovieSaveVM movieVm)
         {
             if (movieVm.ImgFile is not null)
@@ -182,6 +180,7 @@ namespace ETickets.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Delete(int id)
         {
 

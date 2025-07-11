@@ -1,6 +1,8 @@
 ﻿using ETickets.Helpers;
 using ETickets.Models;
 using ETickets.Repositry.IRepositry;
+using ETickets.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ETickets.Areas.Admin.Controllers
@@ -15,6 +17,8 @@ namespace ETickets.Areas.Admin.Controllers
         {
             _ActorRepository = ActorRepository;
         }
+
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin},{SD.Employee}")]
         public IActionResult Index()
         {
 
@@ -22,8 +26,8 @@ namespace ETickets.Areas.Admin.Controllers
             return View(Actors);
         }
 
-
         [HttpGet]
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Save(int id)
         {
             Actor actor = _ActorRepository.GetOne(x => x.Id == id) ?? new Actor();
@@ -37,6 +41,7 @@ namespace ETickets.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Save(Actor actor, IFormFile ProfilePicture)
         {
             var actorDb = _ActorRepository.GetOne(x => x.Id == actor.Id , null , true);
@@ -67,6 +72,7 @@ namespace ETickets.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
 
         }
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Delete(int id)
         {
        

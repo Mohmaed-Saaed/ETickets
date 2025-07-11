@@ -1,14 +1,16 @@
 ﻿using ETickets.Models;
 using ETickets.ModelView;
 using ETickets.Repositry.IRepositry;
+using ETickets.Utilities;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ETickets.Areas.Identity.Controllers
 {
-    [Area("Identity")]
+    [Area("Identity")]   
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _UserManager;
@@ -28,12 +30,20 @@ namespace ETickets.Areas.Identity.Controllers
         [HttpGet]
         public IActionResult Register()
         {
+            if (IsUserLogedIn())
+            {
+                return NotFound();
+            }
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterVM registerVM)
         {
+            if (IsUserLogedIn())
+            {
+                return NotFound();
+            }
             // autoMapping
             var user = registerVM.Adapt<ApplicationUser>();
 
@@ -43,8 +53,9 @@ namespace ETickets.Areas.Identity.Controllers
             if (result.Succeeded)
             {
                 //Send confirmation email.
-                await SendToken(user);
-                TempData["Success"] = "Confirm your email";
+                 await SendToken(user);
+                 await _UserManager.AddToRoleAsync(user, SD.Customer);
+                TempData["Success"] = "Please confirm your email.Then, Login";
             }
             else
             {
@@ -60,17 +71,25 @@ namespace ETickets.Areas.Identity.Controllers
         [HttpGet]
         public async Task SendToken(ApplicationUser user)
         {
+            if (!IsUserLogedIn())
+            {
+                var token = await _UserManager.GenerateEmailConfirmationTokenAsync(user);
 
-            var token = await _UserManager.GenerateEmailConfirmationTokenAsync(user);
+                var link = Url.Action("ConfrimEmail", "Account", new { userId = user.Id, token, area = "Identity" }, Request.Scheme);  // Request.Scheme the protocal
 
-            var link = Url.Action("ConfrimEmail", "Account", new { userId = user.Id, token, area = "Identity" }, Request.Scheme);  // Request.Scheme the protocal
+                await _EmailSender.SendEmailAsync(user.Email ?? "", "Confirm your account", $"<h1> Confirm your account by clicking <a href='{link}'> here </ a> </ h1>");
 
-            await _EmailSender.SendEmailAsync(user.Email ?? "", "Confirm your account", $"<h1> Confirm your account by clicking <a href='{link}'> here </ a> </ h1>");
+            }
 
         }
 
         public async Task<JsonResult> SendEmailConfirmationByUserNameOrEmail(string UserNameOrEmail)
         {
+
+            if (IsUserLogedIn())
+            {
+                return new JsonResult(new { status = false });
+            }
             var user = await _UserManager.FindByEmailAsync(UserNameOrEmail);
 
             user ??= await _UserManager.FindByNameAsync(UserNameOrEmail);
@@ -86,15 +105,24 @@ namespace ETickets.Areas.Identity.Controllers
         }
 
         [HttpGet]
+
+        //[Authorize()]
         public IActionResult Login()
         {
+            if (IsUserLogedIn())
+            {
+                return NotFound();
+            }
             return View(new LoginVM());
         }
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginVM loginVM)
         {
-
+            if (IsUserLogedIn())
+            {
+                return NotFound();
+            }
             var user = await _UserManager.FindByEmailAsync(loginVM.UserNameOrEmail);
 
             user ??= await _UserManager.FindByNameAsync(loginVM.UserNameOrEmail);
@@ -131,6 +159,10 @@ namespace ETickets.Areas.Identity.Controllers
 
         public async Task<IActionResult> ConfrimEmail(string userId, string token)
         {
+            if (IsUserLogedIn())
+            {
+                return NotFound();
+            }
 
             var user = await _UserManager.FindByIdAsync(userId);
 
@@ -154,19 +186,30 @@ namespace ETickets.Areas.Identity.Controllers
 
         public IActionResult EmailConfrimed()
         {
-            return View();
+            if (IsUserLogedIn())
+            {
+            return NotFound();
+            }
+                return View();
         }
 
         [HttpGet]
         public IActionResult ForgetPassword()
         {
+            if (IsUserLogedIn())
+            {
+                return NotFound();
+            }
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> ForgetPassword(ForgetPasswordVM forgetPasswordVM)
         {
-
+            if (IsUserLogedIn())
+            {
+                return NotFound();
+            }
             var user = await _UserManager.FindByEmailAsync(forgetPasswordVM.UserNameOrEmail);
 
             user ??= await _UserManager.FindByNameAsync(forgetPasswordVM.UserNameOrEmail);
@@ -178,7 +221,7 @@ namespace ETickets.Areas.Identity.Controllers
                 var userOTPs = _ApplicationUserOTPRepository
                                 .Get(X => X.ApplicationUserId == user.Id && X.SendDate.Day == DateTime.UtcNow.Day).Count();
 
-                if(userOTPs > numberOfMaxOTPs)
+                if (userOTPs > numberOfMaxOTPs)
                 {
                     TempData["error"] = "You have reached max numbers of OTPs for today.";
                     return View(forgetPasswordVM);
@@ -189,7 +232,7 @@ namespace ETickets.Areas.Identity.Controllers
                 await _EmailSender.SendEmailAsync(user.Email ?? "", "Reset password", $"<h1> This is your OTP number {OTPNumber} to reset your password </ h1>");
 
                 _ApplicationUserOTPRepository.Create(new ApplicationUserOTP
-                {  
+                {
                     OTPNumber = OTPNumber,
                     SendDate = DateTime.UtcNow,
                     ValidTo = DateTime.UtcNow.AddMinutes(30),
@@ -207,6 +250,10 @@ namespace ETickets.Areas.Identity.Controllers
         [HttpGet]
         public async Task<IActionResult> ResetPassword(string userId)
         {
+            if (IsUserLogedIn())
+            {
+                return NotFound();
+            }
             var result = await _UserManager.FindByIdAsync(userId);
 
             if (result is not null)
@@ -220,6 +267,10 @@ namespace ETickets.Areas.Identity.Controllers
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordVM resetPasswordVM)
         {
+            if (IsUserLogedIn())
+            {
+                return NotFound();
+            }
 
             var user = await _UserManager.FindByIdAsync(resetPasswordVM.UserId);
 
@@ -235,7 +286,7 @@ namespace ETickets.Areas.Identity.Controllers
                         {
                             var token = await _UserManager.GeneratePasswordResetTokenAsync(user); // we get the token for security reasons.So,No one can change user's password without a token.
 
-                            var result = await _UserManager.ResetPasswordAsync(user , token, resetPasswordVM.Password);
+                            var result = await _UserManager.ResetPasswordAsync(user, token, resetPasswordVM.Password);
 
                             if (result.Succeeded)
                             {
@@ -243,7 +294,7 @@ namespace ETickets.Areas.Identity.Controllers
                                 _ApplicationUserOTPRepository.Update(LastUserOTP);
                                 TempData["success"] = "Password reset.";
                                 return RedirectToAction(nameof(Login));
-                                
+
                             }
                             else
                             {
@@ -260,9 +311,21 @@ namespace ETickets.Areas.Identity.Controllers
 
         public new async Task<IActionResult> SignOut()
         {
-            await _SignInManager.SignOutAsync();
-            TempData["seccuess"] = "Signed out.";
-            return RedirectToAction("Index", "Home", new { area = "Customer" });
+            if (IsUserLogedIn())
+            {
+                await _SignInManager.SignOutAsync();
+                TempData["success"] = "Signed out.";
+                return RedirectToAction("Index", "Home", new { area = "Customer" });
+             
+            }
+
+            return NotFound();
+        }
+
+
+        public bool IsUserLogedIn()
+        {
+            return (User.Identity is not null && User.Identity.IsAuthenticated);
         }
 
     }

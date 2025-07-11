@@ -1,11 +1,14 @@
 ﻿using ETickets.Data;
 using ETickets.ModelView.Admin;
+using ETickets.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ETickets.Areas.Admin.Controllers
 {
 
     [Area("Admin")]
+    [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin},{SD.Employee}")]
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _db;

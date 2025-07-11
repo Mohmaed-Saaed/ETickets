@@ -1,6 +1,7 @@
 ﻿using ETickets.Models;
-using ETickets.Repositry;
 using ETickets.Repositry.IRepositry;
+using ETickets.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ETickets.Areas.Admin.Controllers
@@ -16,7 +17,7 @@ namespace ETickets.Areas.Admin.Controllers
             _CinemaRepository = CinemaRepository;
         }
 
-
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin},{SD.Employee}")]
         public IActionResult Index()
         {
             var Cinema = _CinemaRepository.Get();
@@ -25,6 +26,7 @@ namespace ETickets.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Save(int? id)
         {
 
@@ -37,6 +39,7 @@ namespace ETickets.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Save(Cinema cinema)
         {
 
@@ -52,6 +55,7 @@ namespace ETickets.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Delete(int id)
         {
             var cinema = _CinemaRepository.GetOne(c => c.Id == id);

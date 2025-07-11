@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace ETickets.ModelView
 {
@@ -26,5 +27,7 @@ namespace ETickets.ModelView
         [Required]
         [Phone]
         public string PhoneNumber { get; set; } = null!;
+        public IEnumerable<SelectListItem>? UserRoles { get; set; }
+        public IEnumerable<string> Roles { get; set; } = null!; // This will add validation for this feild that it is required. null!;
     }
 }

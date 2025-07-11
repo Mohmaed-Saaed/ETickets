@@ -9,9 +9,14 @@
         <div class="d-flex justify-content-between">
         <h1>Movies</h1>
 
-        <p>
-            <a asp-action="Save" class="btn btn-primary">Add</a>
-        </p>
+
+        @if (User.Identity is not null && !User.IsInRole(SD.Employee))
+        {
+            <p>
+                <a asp-action="Save" class="btn btn-primary">Add</a>
+            </p>
+        }
+
         </div>
 
     <div class="table-responsive">
@@ -21,7 +26,11 @@
                     <th width="90%">
                         Name
                     </th>
-                    <th width="10%">Actions</th>
+                    @if (User.Identity is not null && !User.IsInRole(SD.Employee))
+                    {
+                        <th width="10%">Actions</th>
+                    }
+                  
                 </tr>
             </thead>
             <tbody>
@@ -31,10 +40,14 @@
                         <td>
                             @item.Name
                         </td>
-                        <td>
-                            <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">Edit</a> |
-                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@item.Id" data-name="@(item.Name)">Delete </button>
-                        </td>
+                        @if (User.Identity is not null && !User.IsInRole(SD.Employee))
+                        {
+                            <td>
+                                <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">Edit</a> |
+                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@item.Id" data-name="@(item.Name)">Delete </button>
+                            </td>
+                        }
+                     
                     </tr>
                 }
             </tbody>

@@ -12,12 +12,12 @@
 				<div class="col-md-6 position-relative">
 					<div class="border rounded shadow-sm overflow-hidden">
 						<button id="@image.Id" type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle"
-						title="Remove">
+								title="Remove">
 							&times;
 						</button>
 
 						<img src="~/images/movies/@image.ImageUrl" alt="@image.ImageUrl"
-						class="img-fluid w-100" style="object-fit: cover; height: 250px;" />
+							 class="img-fluid w-100" style="object-fit: cover; height: 250px;" />
 					</div>
 				</div>
 			}
@@ -125,165 +125,165 @@
 			</div>
 		</div>
 		<div class="col-md-6 position-relative ">
-		<div class="border rounded shadow-sm overflow-hidden" id="main-image-container">
-			@if(Model.Movie.ImgUrl is not null)
-			{
+			<div class="border rounded shadow-sm overflow-hidden" id="main-image-container">
+				@if (Model.Movie.ImgUrl is not null)
+				{
 					<button id="main-Image-Remove" type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle"
-					title="Remove">
+							title="Remove">
 						&times;
 					</button>
 					<img src="~/images/movies/@Model.Movie.ImgUrl" id="preview" class="img-thumbnail align-" style="max-width: 100%; align-self :start;" />
 
-			}
-		</div>
-		
+				}
+			</div>
 
-		<input type="hidden" id="actorContainer" data-actors='@Html.Raw(Json.Serialize(Model.ActorIds))' />
+
+			<input type="hidden" id="actorContainer" data-actors='@Html.Raw(Json.Serialize(Model.ActorIds))' />
+
+		</div>
+
+
 
 	</div>
-	
-	
-	
-</div>
 	<div id="actorDetails" class="mt-4">
 	</div>
-@section Scripts {
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
-	}
-	<script src="~/lib/jquery/dist/Select2.js"></script>
+	@section Scripts {
+		@{
+			await Html.RenderPartialAsync("_ValidationScriptsPartial");
+		}
+		<script src="~/lib/jquery/dist/Select2.js"></script>
 
-	<script>
+		<script>
 
-		var removedSubImages = [];
+			var removedSubImages = [];
 
-		$('#sub-images-container').on("click" , function(e) {
-			var Id = parseInt(e.target.id);
+			$('#sub-images-container').on("click" , function(e) {
+				var Id = parseInt(e.target.id);
 
-			if(!isNaN(Id)) {
-				var container = $('#sub-images-container');
-				container.find(`#${Id}`).parent().remove();
-				removedSubImages.push(Id);
-				$('#MainForm').append(`<input name="SubImagesRemoved" type="hidden" value="${Id}"/>`)
-			}
-		})
+				if(!isNaN(Id)) {
+					var container = $('#sub-images-container');
+					container.find(`#${Id}`).parent().remove();
+					removedSubImages.push(Id);
+					$('#MainForm').append(`<input name="SubImagesRemoved" type="hidden" value="${Id}"/>`)
+				}
+			})
 
 
 
-					$('#main-image-container').on("click" , '#main-Image-Remove', removeMainImage);
+						$('#main-image-container').on("click" , '#main-Image-Remove', removeMainImage);
 
-					function removeMainImage() {
-					var container = $('#main-image-container');
-					container.html('');
-					$('#MainForm').append(`<input name="IsMainImageRemoved" type="hidden" value="true"/>`)
-					$('#ImgFile').val('');
+						function removeMainImage() {
+						var container = $('#main-image-container');
+						container.html('');
+						$('#MainForm').append(`<input name="IsMainImageRemoved" type="hidden" value="true"/>`)
+						$('#ImgFile').val('');
+						}
+
+
+			$("#Movie.ImgUrl").on("change", previewImage);
+
+				function previewImage(event) {
+					const input = event.target;
+					const container = $('#main-image-container');
+
+						container.html(`
+							<button id="main-Image-Remove" type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle"
+							title="Remove">
+							&times;
+							</button>
+							<img src="~/images/movies/@Model.Movie.ImgUrl" alt="Not found" id="preview" class="img-thumbnail" style="max-width: 100%; align-self :start;" />
+							`)
+
+					const $preview = $('#preview');
+
+					if (input.files && input.files[0]) {
+						const reader = new FileReader();
+
+						reader.onload = function (e) {
+							$preview.attr('src', e.target.result).show();
+						};
+
+						reader.readAsDataURL(input.files[0]);
+					} else {
+						$preview.attr('src', '').hide();
 					}
+				}
 
 
-		$("#Movie.ImgUrl").on("change", previewImage);
+			$("#MovieImage.ImageUrl").on("change", previewImages);
 
-			function previewImage(event) {
+			function previewImages(event) {
 				const input = event.target;
-				const container = $('#main-image-container');
+				const previewContainer = document.getElementById('preview');
 
-					container.html(`
-						<button id="main-Image-Remove" type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle"
-						title="Remove">
-						&times;
-						</button>
-						<img src="~/images/movies/@Model.Movie.ImgUrl" alt="Not found" id="preview" class="img-thumbnail" style="max-width: 100%; align-self :start;" />
-						`)
+				previewContainer.innerHTML = "";
 
-				const $preview = $('#preview');
+				if (input.files && input.files.length > 0) {
+					Array.from(input.files).forEach(file => {
+						const reader = new FileReader();
 
-				if (input.files && input.files[0]) {
-					const reader = new FileReader();
+						reader.onload = function (e) {
+							const img = document.createElement("img");
+							img.src = e.target.result;
+							img.style.width = "100px";
+							img.style.margin = "5px";
+							img.style.border = "1px solid #ccc";
+							previewContainer.appendChild(img);
+						};
 
-					reader.onload = function (e) {
-						$preview.attr('src', e.target.result).show();
-					};
-
-					reader.readAsDataURL(input.files[0]);
-				} else {
-					$preview.attr('src', '').hide();
+						reader.readAsDataURL(file);
+					});
 				}
 			}
 
+			  $('#Actor_Id').select2({
+				placeholder: "Choose actors",
+				allowClear: true,
+			  });
+				placeActorsToSelectList();
 
-		$("#MovieImage.ImageUrl").on("change", previewImages);
+				function placeActorsToSelectList() {
+				const selectedActorIds = JSON.parse($('#actorContainer')[0].dataset.actors);
+				$('#Actor_Id').val(selectedActorIds).trigger('change');
+				 selectedActorIds.forEach((actorId) => {
+				getActorData(actorId);
+				 });
+				}
 
-		function previewImages(event) {
-			const input = event.target;
-			const previewContainer = document.getElementById('preview');
+				var list = [];
 
-			previewContainer.innerHTML = "";
+				$('#Actor_Id').on('select2:unselect', function (e) {
+				const removedId = e.params.data.id;
+				$('#actorDetails').find(`#${removedId}`).remove();
 
-			if (input.files && input.files.length > 0) {
-				Array.from(input.files).forEach(file => {
-					const reader = new FileReader();
+				 });
 
-					reader.onload = function (e) {
-						const img = document.createElement("img");
-						img.src = e.target.result;
-						img.style.width = "100px";
-						img.style.margin = "5px";
-						img.style.border = "1px solid #ccc";
-						previewContainer.appendChild(img);
-					};
+				$('#Actor_Id').on('select2:select', function (e) {
+				var ActorId = e.params.data.id;
+				getActorData(ActorId)
+				});
 
-					reader.readAsDataURL(file);
+			function getActorData(ActorId) {
+				 $.ajax({
+					url: '@Url.Action("GetActorData", "Movie")',
+					type: 'GET',
+					data: { id: ActorId },
+					success: function (data) {
+					if (data && data.actorData) {
+					var actorHtml = `
+					<div id="${data.actorData.id}">
+						   <input type="hidden" name="ActorIds" value="${data.actorData.id}" />
+					   <div class="actor-card" style="margin-left: 60px;margin-top: 5px;">
+							<img src="${data.actorData.image}" alt="${data.actorData.name}" class="actor-image " />
+							<span class="actor-name">${data.actorData.name}</span>
+						</div>
+					</div>`;
+					$('#actorDetails').append(actorHtml);
+				  }
+					}
 				});
 			}
-		}
 
-		  $('#Actor_Id').select2({
-			placeholder: "Choose actors",
-			allowClear: true,
-		  });
-			placeActorsToSelectList();
+		</script>
 
-			function placeActorsToSelectList() {
-			const selectedActorIds = JSON.parse($('#actorContainer')[0].dataset.actors);
-			$('#Actor_Id').val(selectedActorIds).trigger('change');
-			 selectedActorIds.forEach((actorId) => {
-			getActorData(actorId);
-			 });
-			}
-
-			var list = [];
-
-			$('#Actor_Id').on('select2:unselect', function (e) {
-			const removedId = e.params.data.id;
-			$('#actorDetails').find(`#${removedId}`).remove();
-
-			 });
-
-			$('#Actor_Id').on('select2:select', function (e) {
-			var ActorId = e.params.data.id;
-			getActorData(ActorId)
-		});
-
-		function getActorData(ActorId) {
-			 $.ajax({
-				url: '@Url.Action("GetActorData", "Movie")',
-				type: 'GET',
-				data: { id: ActorId },
-				success: function (data) {
-				if (data && data.actorData) {
-				var actorHtml = `
-				<div id="${data.actorData.id}">
-					   <input type="hidden" name="ActorIds" value="${data.actorData.id}" />
-				   <div class="actor-card" style="margin-left: 60px;margin-top: 5px;">
-						<img src="${data.actorData.image}" alt="${data.actorData.name}" class="actor-image " />
-						<span class="actor-name">${data.actorData.name}</span>
-					</div>
-				</div>`;
-				$('#actorDetails').append(actorHtml);
-			  }
-				}
-			});	
-		}
-
-	</script>
-
-}
+	}

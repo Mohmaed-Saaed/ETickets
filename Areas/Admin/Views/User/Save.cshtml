@@ -1,0 +1,88 @@
+﻿@model ETickets.ModelView.RegisterVM
+
+<h1>Admin Register</h1>
+
+<hr />
+<link href="~/css/select2.css" rel="stylesheet" />
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <form asp-action="Save">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="FirstName" class="control-label"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName" class="control-label"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password" class="control-label"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword" class="control-label"></label>
+                    <input asp-for="ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UserName" class="control-label"></label>
+                    <input asp-for="UserName" class="form-control" />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PhoneNumber" class="control-label"></label>
+                    <input asp-for="PhoneNumber" class="form-control" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Roles" class="form-label"></label>
+                    <select asp-for="Roles" asp-items="@Model.UserRoles" multiple="multiple" class="form-control">
+                    </select>
+                    <span asp-validation-for="Roles" class="text-danger"></span>
+
+                <div class="form-group mt-3">
+                    <div class="row justify-content-between">
+                        <input type="submit" value="Create" class="btn btn-primary col-3" />
+                    </div>
+                </div>
+                    <input type="hidden" id="RolesContainer" data-UserRoles='@Html.Raw(Json.Serialize(Model.Roles))' />
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/lib/jquery/dist/Select2.js"></script>
+
+    <script>
+
+        $('#Roles').select2({
+          placeholder: "Choose actors",
+          allowClear: true,
+        });
+          placeActorsToSelectList();
+
+          function placeActorsToSelectList() {
+
+          const selectedActorIds = JSON.parse($('#RolesContainer')[0].dataset.Roles);
+          $('#Roles').val(selectedActorIds).trigger('change');
+          
+          }
+    </script>
+
+            
+}

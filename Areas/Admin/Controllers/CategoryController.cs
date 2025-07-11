@@ -1,14 +1,14 @@
-﻿using ETickets.Data;
-using ETickets.Models;
-using ETickets.ModelView.Admin;
-using ETickets.Repositry;
+﻿using ETickets.Models;
 using ETickets.Repositry.IRepositry;
+using ETickets.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ETickets.Areas.Admin.Controllers
 {
 
     [Area("Admin")]
+
     public class CategoryController : Controller
     {
         private readonly ICategoryRepository _categoryRepository;
@@ -18,7 +18,7 @@ namespace ETickets.Areas.Admin.Controllers
             _categoryRepository = categoryRepository;
         }
 
-
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin},{SD.Employee}")]
         public IActionResult Index()
         {
 
@@ -27,6 +27,7 @@ namespace ETickets.Areas.Admin.Controllers
             return View(category);
         }
         [HttpGet]
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Save(int? id)
         {
         
@@ -37,8 +38,8 @@ namespace ETickets.Areas.Admin.Controllers
 
             return View(category);
         }
-
         [HttpPost]
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Save(Category category)
         {
 
@@ -53,6 +54,7 @@ namespace ETickets.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Delete(int id)
         {
             var Category =  _categoryRepository.GetOne(c => c.Id == id);
