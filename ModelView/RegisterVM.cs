@@ -27,6 +27,8 @@ namespace ETickets.ModelView
         [Required]
         [Phone]
         public string PhoneNumber { get; set; } = null!;
+
+        public bool IsPasswordHiden { get; set; }
         public IEnumerable<SelectListItem>? UserRoles { get; set; }
         public IEnumerable<string> Roles { get; set; } = null!; // This will add validation for this feild that it is required. null!;
     }

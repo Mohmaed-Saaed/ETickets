@@ -26,7 +26,15 @@ namespace ETickets.Areas.Customer.Controllers
         public IActionResult Index(IndexVM indexVM)
         {
             IQueryable<Movie> MoviesList = _db.Movies.Include(m => m.Category).Include(m => m.Cinema).Where(m => m.MovieStatus == true && m.Name.Contains(indexVM.Search ?? ""));
-     
+
+
+            //Response.Cookies.Append("UserName", "Mohmaed");
+
+
+            //HttpContext.Session.SetString("Username", "Mohamed");
+            //HttpContext.Session.SetInt32("UserId", 123);
+
+                
             if (indexVM.CategoryId != 0)
             {
                 MoviesList = MoviesList.Where(m => m.CategoryId == indexVM.CategoryId);
@@ -55,6 +63,13 @@ namespace ETickets.Areas.Customer.Controllers
         }
         public IActionResult Cinemas()
         {
+
+            if(HttpContext.Session.GetString("Username") is not null)
+            {
+                TempData["success"] = "session found";
+
+            }
+
             var Cinemas = _db.Cinemas.ToList();
             return View(Cinemas);
         }

@@ -39,15 +39,25 @@ namespace ETickets
                 options.User.RequireUniqueEmail = true;
             }).AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
-
             builder.Services.ConfigureApplicationCookie(options =>
             {
+                options.Cookie.HttpOnly = true;
                 options.LoginPath = "/Identity/Account/Login"; // Default path if user is not authenticated
                 options.AccessDeniedPath = "/Identity/Account/AccessDenied"; // When user lacks permission
                 options.SlidingExpiration = true; // if he is active 60 minues are refreshing
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // The user is AuAuthenticated for 60 minutes
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // The user is AuAuthenticated for 60 minutes
             });
 
+
+            //To add sessions.
+            //builder.Services.AddDistributedMemoryCache();
+            //builder.Services.AddSession(options =>
+            //{
+            //    //options.IdleTimeout = TimeSpan.FromMinutes(1);
+            //    options.Cookie.Expiration = TimeSpan.FromMinutes(1);
+            //    options.Cookie.HttpOnly = true;
+            //    options.Cookie.IsEssential = true;
+            //});
 
             var app = builder.Build();
 
@@ -63,9 +73,8 @@ namespace ETickets
             app.UseRouting();
 
             app.UseAuthentication();
-
             app.UseAuthorization();
-
+            //app.UseSession();
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",

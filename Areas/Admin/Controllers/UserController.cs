@@ -45,34 +45,28 @@ namespace ETickets.Areas.Admin.Controllers
                 if (user is not null)
                 {
                     registerVM = user.Adapt<RegisterVM>();
+                    registerVM.IsPasswordHiden = true;
 
-                   var roles = await _UserManager.GetRolesAsync(user);
+                    var roles = await _UserManager.GetRolesAsync(user);
 
-                    var userRoleIds = new List<string>();
-
-                    foreach(var roleId in roles)
-                    {
-                        var role =  _RoleManager.FindByNameAsync(roleId).GetAwaiter().GetResult();
-                        if(role is not null)
-                        {
-                            userRoleIds.Add(role.Id); 
-                        }
-                    }
-                    registerVM.UserRoles = _RoleManager.Roles.Select(x => new SelectListItem() { Text = x.Name, Value = x.Id });
-                    registerVM.Roles = userRoleIds;
+                    registerVM.UserRoles = _RoleManager.Roles.Select(x => new SelectListItem() { Text = x.Name, Value = x.Name });
+                    registerVM.Roles = roles;
 
                     return View(registerVM);
                 }
             }
-            registerVM.UserRoles = _RoleManager.Roles.Select(x => new SelectListItem() { Text = x.Name, Value = x.Id });
+            registerVM.UserRoles = _RoleManager.Roles.Select(x => new SelectListItem() { Text = x.Name, Value = x.Name });
             return View(registerVM);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Save(RegisterVM registerVM)
+        public async Task<IActionResult> Save(RegisterVM registerVM , int id)
         {
 
+
             var user = registerVM.Adapt<ApplicationUser>();
+
+            user.EmailConfirmed = true;
 
             var result = await _UserManager.CreateAsync(user , registerVM.Password);
 
@@ -81,21 +75,14 @@ namespace ETickets.Areas.Admin.Controllers
                 if(registerVM.Roles is not null && registerVM.Roles.Count() > 0 )
                 {
 
-                  IEnumerable<string> RoelsName = _RoleManager.Roles.Where(x => registerVM.Roles.Contains(x.Id)).Select(x => x.Name).ToList();
-
-                    if(RoelsName is not null)
-                    {
-
-                        var roleResult = await _UserManager.AddToRolesAsync(user, RoelsName);
+                        var roleResult = await _UserManager.AddToRolesAsync(user, registerVM.Roles);
 
                         if (roleResult.Succeeded)
                         {
                             TempData["success"] = "User added";
                             return RedirectToAction(nameof(Index));
                         }
-                    }
-    
-
+                   
                 } else
                 {
                     TempData["error"] = "Role didn't add!";
