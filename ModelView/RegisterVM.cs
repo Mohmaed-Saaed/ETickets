@@ -30,6 +30,7 @@ namespace ETickets.ModelView
 
         public bool IsPasswordHiden { get; set; }
         public IEnumerable<SelectListItem>? UserRoles { get; set; }
+        public string? Id { get; set; }
         public IEnumerable<string> Roles { get; set; } = null!; // This will add validation for this feild that it is required. null!;
     }
 }
