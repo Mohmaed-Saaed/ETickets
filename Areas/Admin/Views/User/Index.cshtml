@@ -19,30 +19,46 @@
 					<th width="10%">
 						Username
 					</th>
-					<th width="10%">
-						Role
+					<th width="50%">
+						Email
 					</th>
+
 					@if (User.Identity is not null && !User.IsInRole(SD.Employee))
 					{
-						<th width="10%">Actions</th>
+						<th width="15%">Actions</th>
 					}
 				</tr>
 			</thead>
 			<tbody>
 				@foreach (var item in Model)
 				{
-					<tr>
+					<tr >
 						<td>
 							@item.UserName
 						</td>
 						<td>
-							@item.
+							@item.Email
 						</td>
 						@if (User.Identity is not null && !User.IsInRole(SD.Employee) && !item.UserName.Contains(SD.SuperAdmin))
 						{
-							<td>
-								<a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">Edit</a> |
-								<button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@item.Id" data-name="@item.UserName">Delete </button>
+							<td class="row gap-1">
+								<a asp-action="Save" asp-route-id="@item.Id" class="col-3 btn btn-sm btn-info">Edit</a>
+								@if (User.Identity.Name != item.UserName)
+								{
+									<button type="button" class="col-4 btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@item.Id" data-name="@item.UserName">Delete </button>
+									<a asp-action="BlockUser" asp-route-id="@item.Id" class="col-4 btn btn-sm btn-dark">
+
+										@if (item.LockoutEnabled)
+										{
+											<text>Block</text>
+										}
+										else
+										{
+											<text>Unblock</text>
+										}
+
+									</a>
+								}
 							</td>
 						}
 					</tr>

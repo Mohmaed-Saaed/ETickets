@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Threading.Tasks;
 
 namespace ETickets.Areas.Admin.Controllers
@@ -28,9 +29,7 @@ namespace ETickets.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            //_RoleManager.rol
-            var user = _UserManager.Users.ToList();
-            
+            var user = _UserManager.Users.ToList();            
             return View(user);
         }
         [HttpGet]
@@ -41,6 +40,8 @@ namespace ETickets.Areas.Admin.Controllers
             if (id is not null)
             {
                 var user = _UserManager.Users.FirstOrDefault(x => x.Id == id);
+
+                ViewBag.UserId = user?.Id;
 
                 if (user is not null)
                 {
@@ -60,53 +61,53 @@ namespace ETickets.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Save(RegisterVM registerVM)
+        public async Task<IActionResult> Save(RegisterVM registerVM , string Id)
         {
 
-            if (registerVM.Id is not null)
+            if (Id is not null)
             {
+              var user = await _UserManager.FindByIdAsync(Id);
 
-              var user = await _UserManager.FindByIdAsync(registerVM.Id);
+                if (user is null)
+                   return NotFound();
+                
+                var userOldRoles = await _UserManager.GetRolesAsync(user);
 
-                if(user is not null)
+                if (!userOldRoles.Any())
+                   return NotFound();
+
+                var UserUpdated = registerVM.Adapt(user);
+
+                var addUpdatedUserResult = await _UserManager.UpdateAsync(UserUpdated);
+
+                if(!addUpdatedUserResult.Succeeded)
                 {
-                    var userOldRoles = await _UserManager.GetRolesAsync(user);
-
-                    if (userOldRoles is not null)
-                    {
-                        var UserUpdated = registerVM.Adapt(user);
-
-                        var addUpdatedUserResult = await _UserManager.UpdateAsync(UserUpdated);
-
-                        if(addUpdatedUserResult.Succeeded)
-                        {
-                            var rolesRemovedResult = await _UserManager.RemoveFromRolesAsync(user, userOldRoles);
-
-                            if (rolesRemovedResult.Succeeded)
-                            {
-                                var addUpdatedRoelsResult = await _UserManager.AddToRolesAsync(user, registerVM.Roles);
-
-                                if (addUpdatedRoelsResult.Succeeded)
-                                {
-                                    TempData["success"] = "User updated";
-
-                                    return RedirectToAction(nameof(Index));
-
-                                }
-                            }
-                        } else
-                        {
-                            ModelState.AddModelError(string.Empty, string.Join(", ", addUpdatedUserResult.Errors.Select(e => e.Description)));
-                            registerVM.IsPasswordHiden = true;
-                            registerVM.UserRoles = _RoleManager.Roles.Select(x => new SelectListItem() { Value = x.Name, Text = x.Name }).ToList();
-                            return View(registerVM);
-                        }
-                    }
+                    ModelState.AddModelError(string.Empty, string.Join(", ", addUpdatedUserResult.Errors.Select(e => e.Description)));
+                    registerVM.IsPasswordHiden = true;
+                    registerVM.UserRoles = _RoleManager.Roles.Select(x => new SelectListItem() { Value = x.Name, Text = x.Name }).ToList();
+                    return View(registerVM);
                 }
+                
+                var rolesRemovedResult = await _UserManager.RemoveFromRolesAsync(user, userOldRoles);
+
+                if (rolesRemovedResult.Succeeded)
+                {
+                    var addUpdatedRoelsResult = await _UserManager.AddToRolesAsync(user, registerVM.Roles);
+
+                    if (addUpdatedRoelsResult.Succeeded)
+                    {
+                        TempData["success"] = "User updated";
+
+                        return RedirectToAction(nameof(Index));
+
+                    }
+                }         
             }
             else
             {
                 var user = registerVM.Adapt<ApplicationUser>();
+
+
 
                 user.EmailConfirmed = true;
 
@@ -145,17 +146,55 @@ namespace ETickets.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        //public IActionResult Delete(int id)
-        //{
-        //    var user = _UserManager.GetOne(c => c.Id == id);
+        public async Task<IActionResult> Delete(string id)
+        {
+            var user = await _UserManager.FindByIdAsync(id);
 
-        //    if (user is not null)
-        //    {
-        //        _UserManager.Delete(user);
-        //    }
+            if (user is not null)
+            {
+                var rolesResult = await _UserManager.GetRolesAsync(user);
 
-        //    return RedirectToAction(nameof(Index));
-        //}
+                if(rolesResult.Any())
+                {
+                    var removeRolesResult = await _UserManager.RemoveFromRolesAsync(user, rolesResult);
+
+                    if (removeRolesResult.Succeeded)
+                    {
+                        var userResult = await _UserManager.DeleteAsync(user);
+
+                        if (userResult.Succeeded)
+                        {
+                            TempData["success"] = "user delete.";
+                            return RedirectToAction(nameof(Index));
+                        }
+                    }
+                }
+            }
+            TempData["success"] = "user is not delete.";
+            return RedirectToAction(nameof(Index));
+        }
+    public async Task<IActionResult> BlockUser(string Id)
+        {
+            var user = await _UserManager.FindByIdAsync(Id);
+
+            if(user is not null)
+            {
+                user.LockoutEnabled = !user.LockoutEnabled ;
+
+                var result = await _UserManager.UpdateAsync(user);
+
+                if(result.Succeeded)
+                {
+                    TempData["success"] = user.LockoutEnabled ? "User unblocked." : "User blocked.";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
+            TempData["success"] = "Somthing is wrong!";
+
+            return RedirectToAction(nameof(Index));
+        }
     }
+
 }
 
