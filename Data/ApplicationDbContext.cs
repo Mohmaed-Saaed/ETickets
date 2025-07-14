@@ -11,9 +11,8 @@ namespace ETickets.Data;
             : base(options)
         {
         }
-
         public DbSet<Actor> Actors { get; set; }
-
+        public DbSet<Chair> Chairs { get; set; }
         public DbSet<ActorMovie> ActorMovies { get; set; }
 
         public DbSet<Category> Categories { get; set; }

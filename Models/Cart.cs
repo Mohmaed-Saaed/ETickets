@@ -10,5 +10,6 @@ namespace ETickets.Models
         public Movie Movie { get; set; } = null!;
         public ApplicationUser User { get; set; } = null!;
         public int Count{ get; set; }
+
     }
 }

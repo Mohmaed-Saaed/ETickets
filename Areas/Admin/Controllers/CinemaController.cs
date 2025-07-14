@@ -1,4 +1,5 @@
 ﻿using ETickets.Models;
+using ETickets.Repositry;
 using ETickets.Repositry.IRepositry;
 using ETickets.Utilities;
 using Microsoft.AspNetCore.Authorization;
@@ -29,12 +30,7 @@ namespace ETickets.Areas.Admin.Controllers
         [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin}")]
         public IActionResult Save(int? id)
         {
-
-
             Cinema Cinema = _CinemaRepository.GetOne(x => x.Id == id) ?? new Cinema();
-
-
-
             return View(Cinema);
         }
 
@@ -46,10 +42,16 @@ namespace ETickets.Areas.Admin.Controllers
             if (cinema.Id != 0)
             {
                 _CinemaRepository.Update(cinema);
+                _CinemaRepository.DeleteChairs(cinema.Id);
+                _CinemaRepository.AddChairs(cinema.Id, cinema.NumberOfChairs);
             }
             else
             {
                 _CinemaRepository.Create(cinema);
+
+                var cinemaId = _CinemaRepository.GetOne(x => x.Name == cinema.Name)!.Id ;
+                _CinemaRepository.AddChairs(cinemaId , cinema.NumberOfChairs);
+
             }
 
             return RedirectToAction(nameof(Index));
