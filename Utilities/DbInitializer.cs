@@ -54,6 +54,17 @@ namespace ETickets.Utilities
                     _UserManager.AddToRoleAsync(superAdmin, SD.SuperAdmin).GetAwaiter().GetResult();
                 }
             }
+
+            if (!_Context.Days.Any()) {
+                _Context.Days.Add(new Day { Name = "Sunday" });
+                _Context.Days.Add(new Day { Name = "Monday" });
+                _Context.Days.Add(new Day { Name = "Tuesday" });
+                _Context.Days.Add(new Day { Name = "Wednesday" });
+                _Context.Days.Add(new Day { Name = "Thursday" });
+                _Context.Days.Add(new Day { Name = "Friday" });
+                _Context.Days.Add(new Day { Name = "Saturday" });
+                _Context.SaveChanges();
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ using ETickets.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ETickets.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250714191940_DaysAdded")]
+    partial class DaysAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -367,41 +370,6 @@ namespace ETickets.Migrations
                     b.ToTable("Movies");
                 });
 
-            modelBuilder.Entity("ETickets.Models.MovieDay", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DayId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("From")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("MinutesRestAfterMovie")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("To")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DayId");
-
-                    b.HasIndex("MovieId");
-
-                    b.ToTable("MovieDays");
-                });
-
             modelBuilder.Entity("ETickets.Models.MovieDisplayState", b =>
                 {
                     b.Property<int>("Id")
@@ -658,25 +626,6 @@ namespace ETickets.Migrations
                     b.Navigation("Cinema");
 
                     b.Navigation("MovieDisplayState");
-                });
-
-            modelBuilder.Entity("ETickets.Models.MovieDay", b =>
-                {
-                    b.HasOne("ETickets.Models.Day", "Day")
-                        .WithMany()
-                        .HasForeignKey("DayId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ETickets.Models.Movie", "Movie")
-                        .WithMany()
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Day");
-
-                    b.Navigation("Movie");
                 });
 
             modelBuilder.Entity("ETickets.Models.MovieImage", b =>

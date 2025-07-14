@@ -19,7 +19,8 @@ namespace ETickets.Data;
         public DbSet<Cart> Carts { get; set; }
 
         public DbSet<Cinema> Cinemas { get; set; }
-
+        public DbSet<Day> Days { get; set; }
+        public DbSet<MovieDay>  MovieDays { get; set; }
         public DbSet<Movie>  Movies { get; set; }
 
         public DbSet<MovieImage> MovieImages { get; set; }

@@ -216,5 +216,16 @@ namespace ETickets.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+        public IActionResult Assign(int Id)
+        {
+            if (Id > 0)
+            {
+                return RedirectToAction("Save", "MovieDay", new { area = "Admin"  , Id });
+            }
+            return NotFound();
+        }
+
+
     }
 }
