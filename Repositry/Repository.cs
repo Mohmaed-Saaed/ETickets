@@ -17,9 +17,6 @@ namespace ETickets.Repositry
             _db = db;
             _entity = _db.Set<T>();
         }
-
-
-
         public bool Create(T entity)
         {
             try
@@ -47,8 +44,6 @@ namespace ETickets.Repositry
                 return false;
             }
         }
-
-
         public bool Delete(T entity)
         {
             try

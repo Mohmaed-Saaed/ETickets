@@ -27,6 +27,8 @@ namespace ETickets
             builder.Services.AddScoped<IActorRepository, ActosRepository>();
             builder.Services.AddScoped<IActorMovieRepository, AcotMovieRepository>();
             builder.Services.AddScoped<IMovieRepository, MovieRepository>();
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
+
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 
             builder.Services.AddTransient<IApplicationUserOTPRepository, ApplicationUserOTPRepository>();
