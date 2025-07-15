@@ -2,6 +2,7 @@
 using ETickets.Repositry.IRepositry;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Operators.Utilities;
 using System.Linq.Expressions;
 
 namespace ETickets.Repositry
@@ -150,35 +151,13 @@ namespace ETickets.Repositry
             {
                 return false;
             }
-        }       
+        }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        public void Dispose() {
+            const int x = 223;
+        
+        }
 
     }
 }
