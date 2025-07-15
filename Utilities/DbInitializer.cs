@@ -31,14 +31,14 @@ namespace ETickets.Utilities
                 _Context.Database.Migrate();
             }
 
-            if(!_Context.Users.Any())
+            if(!_Context.Users.Any() || !_Context.Roles.Any())
             {
                 _RoleManager.CreateAsync(new(SD.SuperAdmin)).GetAwaiter().GetResult();
                 _RoleManager.CreateAsync(new(SD.Admin)).GetAwaiter().GetResult();
                 _RoleManager.CreateAsync(new(SD.Employee)).GetAwaiter().GetResult();
                 _RoleManager.CreateAsync(new(SD.Customer)).GetAwaiter().GetResult();
 
-                _UserManager.CreateAsync(new ApplicationUser()
+              var result =  _UserManager.CreateAsync(new ApplicationUser()
                 {
                     FirstName = "Super",
                     LastName = "Admin",
@@ -47,12 +47,16 @@ namespace ETickets.Utilities
                     EmailConfirmed = true,
                 }, "SuperAdmin1!").GetAwaiter().GetResult();
 
-                var superAdmin = _UserManager.FindByNameAsync(SD.SuperAdmin).GetAwaiter().GetResult();
-
-                if (superAdmin is not null)
+                if(result.Succeeded)
                 {
-                    _UserManager.AddToRoleAsync(superAdmin, SD.SuperAdmin).GetAwaiter().GetResult();
-                }
+                    var superAdmin = _UserManager.FindByNameAsync(SD.SuperAdmin).GetAwaiter().GetResult();
+
+                    if (superAdmin is not null)
+                    {
+                        _UserManager.AddToRoleAsync(superAdmin, SD.SuperAdmin).GetAwaiter().GetResult();
+                    }
+                } 
+              
             }
 
             if (!_Context.Days.Any()) {
