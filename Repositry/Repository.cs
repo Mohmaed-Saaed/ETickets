@@ -150,6 +150,35 @@ namespace ETickets.Repositry
             {
                 return false;
             }
-        }
+        }       
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }
