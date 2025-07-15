@@ -1,0 +1,113 @@
+﻿@model IEnumerable<Cart>
+
+
+    <br />
+    <div class="card shadow border-0">
+        <div class="card-body my-4">
+            <div class="row">
+            </div>
+            <div class="row mb-3 pb-3">
+                <div class="col-md-2 offset-md-1">
+                    <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn btn-outline-primary text-uppercase mb-5 btn-sm"><small>Continue Shopping</small></a>
+                </div>
+                <div class="col-md-10 offset-md-1">
+
+                    @foreach(var item in Model)
+                    {
+
+                        <div class="row border-bottom pb-3">
+                            <div class="d-none d-lg-block col-lg-1 text-center py-2">
+                                <img src="~/images/movies/@item.Movie.ImgUrl" class="rounded" width="100%" />
+                            </div>
+                            <div class="col-12 col-lg-6 pt-md-3">
+                                <h5 class="text-uppercase text-secondary"><strong>@item.Movie.Name</strong></h5>
+                                <p><small>@item.Movie.Description</small></p>
+                            </div>
+                            <div class="col-12  col-lg-5 text-center row">
+                                <div class="col-3 text-md-right pt-2 pt-md-4">
+                                    <h6 class="fw-semibold">
+                                        @item.Movie.Price
+                                        <span class="text-muted">&nbsp;x&nbsp;</span>
+                                        <span id="count">  @item.Count</span>
+                                      
+                                    </h6>
+                                </div>
+                                <div class="col-6 col-sm-4 col-lg-6 pt-2">
+                                    <div class="w-75 btn-group" role="group">
+                                    <button data-movie-id="@item.MovieId" class="btn btn-outline-primary bg-gradient py-2 Increment">
+                                            +  <i class="bi bi-plus-square"></i>
+                                        </button>
+                                        <button id="Decrement" href="/Customer/Cart/DecrementCount?movieId=item.@item.MovieId" class="btn btn-outline-primary bg-gradient py-2">
+                                           -
+                                        </button>
+                                    </div>
+
+                                </div>
+                                <div class="col-3 col-sm-4 col-lg-2 offset-lg-1 text-right pt-2">
+                                    <a href="/Customer/Cart/Delete?productId=@item.MovieId" class="btn btn-danger bg-gradient py-2 ">
+                                        <i class="bi bi-trash-fill"></i>Delete
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    }
+
+                    
+
+
+                </div>
+            </div>
+            <div class="card-footer bg-white border-0">
+                <div class="row">
+                    <div class="col-md-4 offset-md-4">
+                        <ul class="list-group mb-4">
+                            <li class="d-flex justify-content-between align-items-center">
+                                <h5 class="text-dark fw-semibold text-uppercase"> Total (EGP)</h5>
+                                <h4 id="TotalAmount" class="text-dark fw-bolder">@ViewBag.TotalAmount.ToString("c")</h4>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 offset-md-5">
+                        <a href="/Customer/Cart/Pay" class="btn btn-primary border-0 bg-gradient w-100 py-2">Pay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script>
+
+
+
+    $(".Increment").on("click", function () {
+
+        var movieId = $(this).data('movie-id'); // Get the data attribute
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Increment", "Cart")", // Razor output must be inside quotes
+            data: { movieId: movieId },
+            success: function (data) {
+                // $($(this).attr('id')).html(data.movieCount);
+                var countElement = $(this).parent().parent().parent().parent().find('#count');
+                    countElement.html(data.count);
+                
+        console.log(countElement);
+                $("#TotalAmount").html(data.TotalAmount);
+                console.log(data);
+            }
+        });
+    });
+
+
+
+
+
+
+</script>

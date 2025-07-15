@@ -153,11 +153,5 @@ namespace ETickets.Repositry
             }
         }
 
-
-        public void Dispose() {
-            const int x = 223;
-        
-        }
-
     }
 }
