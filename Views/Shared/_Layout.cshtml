@@ -37,7 +37,7 @@
                 <div class="collapse navbar-collapse justify-content-end" id="navbarTogglerDemo03">
                     <ul class="navbar-nav mb-2 mb-lg-0">
 
-                        @if(User.Identity.IsAuthenticated) // This is always there is the base class User 
+                        @if(User.Identity is not null  && User.Identity.IsAuthenticated) // This is always there is the base class User 
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="SignOut">SignOut</a>
@@ -54,6 +54,16 @@
                                 <a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="Register">Register</a>
                             </li>
                         }
+
+                        @if(User.Identity is not null && User.Identity.IsAuthenticated && !User.IsInRole(SD.Customer))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Admin" asp-controller="Home" asp-action="Index">Admin dashboard</a>
+                            </li>
+                        }
+
+
+
                     </ul>
                 </div>
             </div>

@@ -1,8 +1,6 @@
 ﻿using ETickets.Data;
 using ETickets.Repositry.IRepositry;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Operators.Utilities;
 using System.Linq.Expressions;
 
 namespace ETickets.Repositry

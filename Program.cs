@@ -31,9 +31,11 @@ namespace ETickets
             builder.Services.AddScoped<IMovieDayRepository, MovieDayRepository>();
 
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
-            builder.Services.AddTransient<IApplicationUserOTPRepository, ApplicationUserOTPRepository>();
-            builder.Services.AddTransient<IEmailSender, EmailSender>();
-            builder.Services.AddTransient<IMovieAdminSaveService, MovieAdminSaveService>();
+            builder.Services.AddScoped<IApplicationUserOTPRepository, ApplicationUserOTPRepository>();
+            builder.Services.AddScoped<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<IMovieAdminSaveService, MovieAdminSaveService>();
+            builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+            builder.Services.AddScoped<IReservationDetailRepository, ReservationDetailRepository>();
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -41,6 +43,7 @@ namespace ETickets
                 options.User.RequireUniqueEmail = true;
             }).AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
+
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.HttpOnly = true;
@@ -52,14 +55,18 @@ namespace ETickets
 
 
             //To add sessions.
-            //builder.Services.AddDistributedMemoryCache();
-            //builder.Services.AddSession(options =>
-            //{
-            //    //options.IdleTimeout = TimeSpan.FromMinutes(1);
-            //    options.Cookie.Expiration = TimeSpan.FromMinutes(1);
-            //    options.Cookie.HttpOnly = true;
-            //    options.Cookie.IsEssential = true;
-            //});
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(30);
+                //options.Cookie.Expiration = TimeSpan.FromMinutes(1);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
+            builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe")); // StripeSettings is the dependency of stripe section in appSettings.
+
+            Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"]; // Stripe.StripeConfiguration.ApiKey Global StripeConfiguration must have the secret key.
 
             var app = builder.Build();
 
@@ -76,7 +83,7 @@ namespace ETickets
 
             app.UseAuthentication();
             app.UseAuthorization();
-            //app.UseSession();
+            app.UseSession();
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
@@ -85,6 +92,7 @@ namespace ETickets
 
             using (var scope = app.Services.CreateScope())
             {
+                
                 var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
                 // use DbInitializer
                 dbInitializer.Init();

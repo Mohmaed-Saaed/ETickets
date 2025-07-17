@@ -6,27 +6,31 @@ using ETickets.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Stripe.Checkout;
+using Stripe.Climate;
 using System.Threading.Tasks;
 
 namespace ETickets.Areas.Customer.Controllers
 {
     [Area("Customer")]
-    [Authorize(Roles = $"{SD.Employee}")]
+    [Authorize(Roles = $"{SD.Customer}")]
     public class CartController : Controller
     {
-
         readonly public ICartRepository _CartRepository;
         readonly public IMovieRepository _MovieRepository;
+        readonly public IReservationRepository _ReservationRepository;
         readonly public UserManager<ApplicationUser> _UserManager;
 
 
         public CartController(UserManager<ApplicationUser> userManager,
                               ICartRepository cartRepository,
-                              IMovieRepository movieRepository)
+                              IMovieRepository movieRepository,
+                              IReservationRepository reservation)
         {
             _CartRepository = cartRepository;
             _UserManager = userManager;
             _MovieRepository = movieRepository;
+            _ReservationRepository = reservation;
         }
 
 
@@ -122,7 +126,7 @@ namespace ETickets.Areas.Customer.Controllers
 
                 if (cartMovie is not null)
                 {
-                   
+
 
                     cartMovie.Count--;
 
@@ -146,14 +150,11 @@ namespace ETickets.Areas.Customer.Controllers
 
             if (cartMovie is not null)
             {
-
                 var user = await _UserManager.GetUserAsync(User);
 
                 if (user is not null)
                 {
-
                     var userCart = _CartRepository.GetOne(x => x.MovieId == movieId && user.Id == x.ApplicationUserId);
-
                     if (userCart is not null)
                     {
                         _CartRepository.Delete(userCart);
@@ -164,6 +165,69 @@ namespace ETickets.Areas.Customer.Controllers
             TempData["error"] = "Somthing is wrong";
             return RedirectToAction(nameof(Index));
         }
+        public async Task<IActionResult> Pay()
+        {
+            var user = await _UserManager.GetUserAsync(User);
+
+            if (user is not null)
+            {
+                var userCart = _CartRepository.Get(x => x.ApplicationUserId == user.Id, include: [x => x.Movie]);
+
+                if (userCart is not null)
+                {
+                    _ReservationRepository.Create(new Reservation()
+                    {
+                        ApplicationUserId = user.Id,
+                        CreatedAt = DateTime.UtcNow,
+                        Total = userCart.Sum(x => x.Movie.Price * x.Count) ?? 0,
+                        IsPaid = false,
+                        PaymentMethod = Global.PaymentMethod.Visa
+
+                    });
+
+
+                    var options = new SessionCreateOptions
+                    {
+                        PaymentMethodTypes = new List<string> { "card" },
+                        LineItems = new List<SessionLineItemOptions>(),
+                        Mode = "payment",
+                        SuccessUrl = $"{Request.Scheme}://{Request.Host}/Customer/Checkout/Success",
+                        CancelUrl = $"{Request.Scheme}://{Request.Host}/Customer/Checkout/Cancel",
+                    };
+
+
+                    foreach (var item in userCart)
+                    {
+                        options.LineItems.Add(new SessionLineItemOptions()
+                        {
+                            PriceData = new SessionLineItemPriceDataOptions()
+                            {
+                                Currency = "EGP",
+                                ProductData = new SessionLineItemPriceDataProductDataOptions()
+                                {
+                                    Name = item.Movie.Name
+                                },
+                                UnitAmount = (long)(item.Movie.Price * item.Count)
+                            },
+                            Quantity = item.Count,
+
+                        });
+                    }
+
+                    var service = new SessionService();
+                    var session = service.Create(options);
+
+                    return Redirect(session.Url);
+               
+                }
+
+                return new EmptyResult();
+            }
+
+            return new EmptyResult();
+
+        }
 
     }
+
 }

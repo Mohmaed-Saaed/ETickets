@@ -22,7 +22,8 @@ namespace ETickets.Data;
         public DbSet<Day> Days { get; set; }
         public DbSet<MovieDay>  MovieDays { get; set; }
         public DbSet<Movie>  Movies { get; set; }
-
+        public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<ReservationDetail> reservationDetails{ get; set; }
         public DbSet<MovieImage> MovieImages { get; set; }
 
         public DbSet<MovieDisplayState> MovieDisplayStates { get; set; }
