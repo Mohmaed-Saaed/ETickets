@@ -40,7 +40,7 @@ namespace ETickets.Areas.Customer.Controllers
 
             if (user is not null)
             {
-                var userCart = _CartRepository.Get(c => c.ApplicationUserId == user.Id, [x => x.Movie]);
+                var userCart = _CartRepository.Get(c => c.ApplicationUserId == user.Id, [x => x.Movie , x => x.Movie.Cinema]);
 
                 ViewBag.TotalAmount = userCart.Sum(x => x.Count * x.Movie.Price);
 
@@ -77,10 +77,12 @@ namespace ETickets.Areas.Customer.Controllers
                         }
                         else
                         {
+                            
                             _CartRepository.Create(new Cart()
                             {
                                 MovieId = movieId,
                                 ApplicationUserId = user.Id,
+                                CinemaId = movie.CinemaId,
                                 Count = quantity
                             });
                         }
@@ -185,14 +187,19 @@ namespace ETickets.Areas.Customer.Controllers
 
                     });
 
+                    var lastReservation = _ReservationRepository.Get(x => x.ApplicationUserId == user.Id).LastOrDefault();
+
+                    if (lastReservation is null)
+                        return BadRequest();
+                    
 
                     var options = new SessionCreateOptions
                     {
                         PaymentMethodTypes = new List<string> { "card" },
                         LineItems = new List<SessionLineItemOptions>(),
                         Mode = "payment",
-                        SuccessUrl = $"{Request.Scheme}://{Request.Host}/Customer/Checkout/Success",
-                        CancelUrl = $"{Request.Scheme}://{Request.Host}/Customer/Checkout/Cancel",
+                        SuccessUrl = $"{Request.Scheme}://{Request.Host}/Customer/Checkout/Success/{lastReservation.Id}",
+                        CancelUrl = $"{Request.Scheme}://{Request.Host}/Customer/Checkout/Cancel/{lastReservation.Id}",
                     };
 
 
@@ -207,7 +214,7 @@ namespace ETickets.Areas.Customer.Controllers
                                 {
                                     Name = item.Movie.Name
                                 },
-                                UnitAmount = (long)(item.Movie.Price * item.Count)
+                                UnitAmount = (long?)(item.Movie.Price * item.Count)
                             },
                             Quantity = item.Count,
 
@@ -216,7 +223,8 @@ namespace ETickets.Areas.Customer.Controllers
 
                     var service = new SessionService();
                     var session = service.Create(options);
-
+                    lastReservation.SessionId = session.Id; // This saves the session Id.
+                    _ReservationRepository.Commit();
                     return Redirect(session.Url);
                
                 }
