@@ -3,6 +3,7 @@ using ETickets.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NPOI.OpenXmlFormats.Dml.Diagram;
+using NPOI.SS.Formula.Functions;
 using System.Threading.Tasks;
 
 namespace ETickets.Utilities
@@ -68,6 +69,41 @@ namespace ETickets.Utilities
                 _Context.Days.Add(new Day { Name = "Friday" });
                 _Context.Days.Add(new Day { Name = "Saturday" });
                 _Context.SaveChanges();
+            }
+
+            if (!_Context.Cinemas.Any()) {
+                _Context.Cinemas.Add(new Cinema {Address = "Address 1" ,Name ="Cinema 1" ,NumberOfChairs = 10 });
+                _Context.Cinemas.Add(new Cinema {Address = "Address 2" ,Name ="Cinema 2" ,NumberOfChairs = 20 });
+
+            }
+
+            if (!_Context.Categories.Any())
+            {
+                _Context.Categories.Add(new Category { Name = "Action"});
+                _Context.Categories.Add(new Category { Name = "Drama"});
+            }
+
+            if (!_Context.MovieDisplayStates.Any())
+            {
+                _Context.MovieDisplayStates.Add(new MovieDisplayState { Status = "Expired" });
+                _Context.MovieDisplayStates.Add(new MovieDisplayState { Status = "Comming soon" });
+                _Context.MovieDisplayStates.Add(new MovieDisplayState { Status = "Available" });
+            }
+
+            if (!_Context.Actors.Any())
+            {
+                _Context.Actors.Add(new Actor { FirstName = "Jhin", LastName = "Talon", Bio = "Bio", News = "News", });
+            }
+
+            if (!_Context.Movies.Any())
+            {
+                _Context.Movies.Add(new Movie { Name = "Movie 1" , CategoryId = 1 , CinemaId = 1, MovieDisplayStateId = 3  , Description = "Description" 
+                ,Price = 100 , StartDate = DateTime.UtcNow , EndDate = DateTime.UtcNow.AddDays(10) });
+            }
+
+            if (!_Context.ActorMovies.Any())
+            {
+                _Context.ActorMovies.Add(new ActorMovie { ActorId = 1 , MovieId = 1});
             }
         }
     }

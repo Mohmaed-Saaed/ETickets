@@ -131,6 +131,15 @@
                         </a>
                     }
                 </div>
+
+                        <div class="row">
+                        <form asp-area="Customer" asp-controller="Cart" asp-action="AddToCart">
+                            <label class="form-label">quantity</label>
+                            <input  name="quantity" type="number" class="col-3 form-control w-25" />
+                            <input type="hidden" value="@Model.Id" name="movieId" />
+                             <input type="submit"  class="col-3" />
+                        </form>
+                        </div>
                 </div>
                     </div>
                 </div>

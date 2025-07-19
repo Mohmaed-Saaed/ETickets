@@ -1,12 +1,18 @@
 ﻿namespace ETickets;
-    public class Global
+public static class Global
+{
+    public enum MovieStatus
     {
-        public enum MovieStatus
-        {
-           Available = 1,
-           Expired = 2,
-           ComingSoon = 3
-        }
-
+        Available = 1,
+        Expired = 2,
+        ComingSoon = 3
     }
+
+    public enum PaymentMethod
+    {
+        Visa,
+        Cash
+    }
+
+}
 

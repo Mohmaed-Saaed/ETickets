@@ -147,7 +147,7 @@ namespace ETickets.Areas.Identity.Controllers
                     }
 
                     TempData["success"] = "Logined in.";
-                    await _SignInManager.SignInAsync(user, loginVM.RememberMe);
+                    await _SignInManager.SignInAsync(user, loginVM.RememberMe); // Sends token to the browser with userId and roles so they are saved in the brower
                     return RedirectToAction("Index", "Home", new { area = "Customer" });
                 }
             }
