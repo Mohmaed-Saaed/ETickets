@@ -1,4 +1,5 @@
 ﻿using ETickets.Models;
+using ETickets.Repositry;
 using ETickets.Repositry.IRepositry;
 using ETickets.Utilities;
 using Mapster;
@@ -26,10 +27,22 @@ namespace ETickets.Areas.Customer.Controllers
                                   UserManager<ApplicationUser> userManager)
         {
             _ReservationRepository = reservationRepository;
+            _UserManager = userManager;
+            _CartRepository = cartRepository;
+            _ReservationDetailRepository = reservationDetailRepository;
+
         }
 
         public async Task<IActionResult> Success(int Id)
         {
+
+            if (HttpContext.Session.GetString("Cinfirm") != "true")
+            {
+
+                return BadRequest();
+            }
+
+            HttpContext.Session.Remove("Cinfirm");
 
             var reservation = _ReservationRepository.GetOne(x => x.Id == Id);
 
@@ -37,7 +50,7 @@ namespace ETickets.Areas.Customer.Controllers
             {
                 var user = await _UserManager.GetUserAsync(User);
 
-                if (user is null)
+                 if (user is null)
                     return BadRequest();
 
 
@@ -70,9 +83,12 @@ namespace ETickets.Areas.Customer.Controllers
 
                 _CartRepository.RemoveRange(userCart);
 
+                return View();
+            } else
+            {
+                return NotFound();
             }
 
-            return View();
         }
 
         public IActionResult Cancel()

@@ -225,6 +225,9 @@ namespace ETickets.Areas.Customer.Controllers
                     var session = service.Create(options);
                     lastReservation.SessionId = session.Id; // This saves the session Id.
                     _ReservationRepository.Commit();
+
+                    HttpContext.Session.SetString("Cinfirm", "true");
+
                     return Redirect(session.Url);
                
                 }
