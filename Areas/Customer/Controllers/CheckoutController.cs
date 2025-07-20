@@ -5,6 +5,7 @@ using ETickets.Utilities;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Stripe.Checkout;
 using System.Threading.Tasks;
@@ -20,16 +21,19 @@ namespace ETickets.Areas.Customer.Controllers
         private readonly IReservationRepository _ReservationRepository;
         private readonly ICartRepository _CartRepository;
         private readonly IReservationDetailRepository _ReservationDetailRepository;
+        private readonly IEmailSender _EmailSender;
         private readonly UserManager<ApplicationUser> _UserManager;
         public CheckoutController(IReservationRepository reservationRepository,
                                   ICartRepository cartRepository,
                                   IReservationDetailRepository reservationDetailRepository,
-                                  UserManager<ApplicationUser> userManager)
+                                  UserManager<ApplicationUser> userManager,
+                                  IEmailSender emailSender)
         {
             _ReservationRepository = reservationRepository;
             _UserManager = userManager;
             _CartRepository = cartRepository;
             _ReservationDetailRepository = reservationDetailRepository;
+            _EmailSender = emailSender; 
 
         }
 
@@ -82,6 +86,9 @@ namespace ETickets.Areas.Customer.Controllers
                 _ReservationDetailRepository.AddRange(reservationDetails);
 
                 _CartRepository.RemoveRange(userCart);
+
+                await _EmailSender.SendEmailAsync(user.Email ?? "", "Etickets", $"<h1>Thank you for your reservation.</ h1>");
+
 
                 return View();
             } else
