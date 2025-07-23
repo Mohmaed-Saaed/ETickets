@@ -8,6 +8,8 @@ namespace ETickets.ModelView
         public string? MovieName{ get; set; }
         public int DayId { get; set; }
         public string? DayName{ get; set; }
+
+        public DateOnly Date { get; set; } 
         public DateTime From { get; set; }
         public DateTime To { get; set; }
 
