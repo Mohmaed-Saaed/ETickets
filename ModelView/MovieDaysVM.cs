@@ -1,17 +1,19 @@
 ﻿using ETickets.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace ETickets.ModelView
 {
     public class MovieDaysVM
     {
         public int MovieId { get; set; }
+        [Display(Name = "Movie name")]
         public string? MovieName{ get; set; }
         public int DayId { get; set; }
         public string? DayName{ get; set; }
 
         public DateOnly Date { get; set; } 
-        public DateTime From { get; set; }
-        public DateTime To { get; set; }
+        public TimeOnly From { get; set; }
+        public TimeOnly To { get; set; }
 
         public int AvailableDays { get; set; } 
         public int MinutesRestAfterMovie { get; set; }

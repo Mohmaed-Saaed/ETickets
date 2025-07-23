@@ -88,7 +88,10 @@
 						<img src="~/images/movies/@movie.ImgUrl" onerror="this.onerror=null;this.src='https://placehold.co/150x225/e0e0e0/ffffff?text=Placeholder';" alt="Movie Poster" class="movie-poster">
 						<div class="movie-details">
 							<div class="movie-info">
-								<p><strong>Price:</strong> <span class="badge bg-secondary rounded-pill px-3 py-2 text-base">@movie.Price</span></p>
+								<div class="row justify-content-between">
+								<p class="col-auto"><strong>Price:</strong> <span class="badge bg-secondary rounded-pill px-3 py-2 text-base">@movie.Price</span></p>
+								<span class="col-2">@movie.Duration</span>
+								</div>
 								<p><strong>Cinema:</strong> @movie.Cinema?.Name</p>
 								<p><strong>Start Date:</strong> @movie.StartDate </p>
 								<p><strong>End Date:</strong> @movie.EndDate </p>
@@ -108,7 +111,7 @@
 										">
 									Book Ticket
 								</button>
-								<a asp-area="Customer" asp-controller="Cart" asp-action="AddToCart" >Add to cart</a>
+				
 							</div>
 						</div>
 					</div>

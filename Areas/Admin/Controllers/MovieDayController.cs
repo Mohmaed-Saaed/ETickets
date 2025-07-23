@@ -1,4 +1,5 @@
-﻿using ETickets.Models;
+﻿using ETickets.Migrations;
+using ETickets.Models;
 using ETickets.ModelView;
 using ETickets.Repositry.IRepositry;
 using Microsoft.AspNetCore.Mvc;
@@ -35,14 +36,21 @@ namespace ETickets.Areas.Admin.Controllers
             {
                 MovieId = Id,
                 MovieName = movie.Name,
-                Date = DateOnly.FromDateTime(DateTime.Now)
+                Date = DateOnly.FromDateTime(DateTime.Now),
+                Movie = movie
             };
 
             return View(movieDayVM);        
         }
 
-        public IActionResult GetCurrentMovieDayDatesForDay(DateOnly date, int id = 0 )
+        public IActionResult GetMovieDateTimes(DateOnly date, int movieId = 0 )
         {
+            var movieDay = _MovieDayRepository.Get(x => x.Date == date, include: [x => x.Movie]);
+            if (movieDay is not null)
+            {
+
+                return PartialView("ShowMovieTimes", movieDay);
+            }
 
             return new EmptyResult();
         }

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<MovieDay>
+
+<div class="table-responsive">
+    <table id="CinemaTable" class="table table-striped  table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th width="50%">
+                    Movie
+                </th>
+                <th width="25%">
+                    From
+                </th>
+                <th width="25%">
+                    To
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.Movie.Name
+                    </td>
+                    <td>
+                        @item.From
+                    </td>
+                    <td>
+                        @item.To
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

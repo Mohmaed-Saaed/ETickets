@@ -4,6 +4,7 @@ using ETickets.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ETickets.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250723171345_fixDate")]
+    partial class fixDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -329,9 +332,6 @@ namespace ETickets.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(5000)");
 
-                    b.Property<TimeSpan?>("Duration")
-                        .HasColumnType("time");
-
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime");
 
@@ -389,8 +389,8 @@ namespace ETickets.Migrations
                     b.Property<int>("DayId")
                         .HasColumnType("int");
 
-                    b.Property<TimeOnly>("From")
-                        .HasColumnType("time");
+                    b.Property<DateTime>("From")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("MinutesRestAfterMovie")
                         .HasColumnType("int");
@@ -398,8 +398,8 @@ namespace ETickets.Migrations
                     b.Property<int>("MovieId")
                         .HasColumnType("int");
 
-                    b.Property<TimeOnly>("To")
-                        .HasColumnType("time");
+                    b.Property<DateTime>("To")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 

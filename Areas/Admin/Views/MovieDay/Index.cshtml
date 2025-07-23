@@ -66,23 +66,3 @@
         </table>
     </div>
 </div>
-        
-<partial name="Delete" />
-
-@section Scripts {
-    <script>
-            $('#confirmDeleteModal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget);
-
-                var cinemaId = button.data('id');
-                var cinemaName = button.data('name');
-
-                $(this).find('#cinemaName').text(cinemaName);
-                $(this).find('#cinemaIdToDelete').val(cinemaId);
-            });
-
-            $('#confirmDeleteButton').on('click', function () {
-                $('#deleteCinemaForm').submit();
-            });
-    </script>
-}

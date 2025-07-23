@@ -33,6 +33,7 @@ public partial class Movie
     public int? CinemaId { get; set; }
     [Display(Name = "Category")]
     public int? CategoryId { get; set; }
+    public TimeSpan? Duration { get; set; }
 
     public virtual ICollection<ActorMovie> ActorMovies { get; set; } = new List<ActorMovie>();
     public virtual ICollection<MovieImage>  MovieImages { get; set; } = new List<MovieImage>();

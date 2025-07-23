@@ -328,5 +328,11 @@ namespace ETickets.Areas.Identity.Controllers
             return (User.Identity is not null && User.Identity.IsAuthenticated);
         }
 
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
     }
 }
