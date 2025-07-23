@@ -12,8 +12,6 @@ public partial class Cinema
     public string? Name { get; set; }
     public string? Description { get; set; }
     public string? CinemaLogo { get; set; }
-    [Required]
-    public int NumberOfChairs { get; set; }
 
     [Required]
     public string Address { get; set; } = null!;

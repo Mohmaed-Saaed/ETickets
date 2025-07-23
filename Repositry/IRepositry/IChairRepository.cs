@@ -2,9 +2,7 @@
 
 namespace ETickets.Repositry.IRepositry
 {
-    public interface ICinemaRepository : IRepository<Cinema>
+    public interface IChairRepository : IRepository<Chair>
     {
-
-
     }
 }

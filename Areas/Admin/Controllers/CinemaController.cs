@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ETickets.Areas.Admin.Controllers
 {
     [Area("Admin")]
+
     public class CinemaController : Controller
     {
 
@@ -42,15 +43,12 @@ namespace ETickets.Areas.Admin.Controllers
             if (cinema.Id != 0)
             {
                 _CinemaRepository.Update(cinema);
-                _CinemaRepository.DeleteChairs(cinema.Id);
-                _CinemaRepository.AddChairs(cinema.Id, cinema.NumberOfChairs);
             }
             else
             {
                 _CinemaRepository.Create(cinema);
 
                 var cinemaId = _CinemaRepository.GetOne(x => x.Name == cinema.Name)!.Id ;
-                _CinemaRepository.AddChairs(cinemaId , cinema.NumberOfChairs);
 
             }
 

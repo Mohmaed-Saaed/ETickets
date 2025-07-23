@@ -31,21 +31,20 @@ namespace ETickets.Areas.Admin.Controllers
                 return RedirectToAction("Index", "Movie", new { area = "Admin"});
             }
 
-            //var CountDays = null;
-
-            //DateTime.
-            //List<DateTime> Days = new List<DateTime>();
-
-            //foreach(var day in movie.) { }
-
-
-
             var movieDayVM =   new MovieDaysVM()
             {
-                MovieName = movie.Name
+                MovieId = Id,
+                MovieName = movie.Name,
+                Date = DateOnly.FromDateTime(DateTime.Now)
             };
 
             return View(movieDayVM);        
+        }
+
+        public IActionResult GetCurrentMovieDayDatesForDay(DateOnly date, int id = 0 )
+        {
+
+            return new EmptyResult();
         }
     }
 }

@@ -8,7 +8,7 @@
         @if (User.Identity is not null && !User.IsInRole(SD.Employee))
         {
             <p>
-                <a asp-action="Save" class="btn btn-primary">Add</a>
+                <a asp-action="Assign" class="btn btn-primary">Add</a>
             </p>
         }
     

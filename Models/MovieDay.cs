@@ -6,7 +6,6 @@
         public int MovieId{ get; set; }
         public int DayId{ get; set; }
         public DateTime Date { get; set; }
-
         public DateTime From { get; set; }
         public DateTime To { get; set; }
         public int MinutesRestAfterMovie { get; set; } 

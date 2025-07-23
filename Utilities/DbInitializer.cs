@@ -72,8 +72,8 @@ namespace ETickets.Utilities
             }
 
             if (!_Context.Cinemas.Any()) {
-                _Context.Cinemas.Add(new Cinema {Address = "Address 1" ,Name ="Cinema 1" ,NumberOfChairs = 10 });
-                _Context.Cinemas.Add(new Cinema {Address = "Address 2" ,Name ="Cinema 2" ,NumberOfChairs = 20 });
+                _Context.Cinemas.Add(new Cinema {Address = "Address 1" ,Name ="Cinema 1"  });
+                _Context.Cinemas.Add(new Cinema {Address = "Address 2" ,Name ="Cinema 2" });
 
             }
 
