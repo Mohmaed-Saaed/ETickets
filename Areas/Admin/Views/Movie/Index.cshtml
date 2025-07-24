@@ -54,7 +54,7 @@
 
                                 @if(item.MovieDisplayState.Id != (int)Global.MovieStatus.Expired)
                                 {
-                                <a class="btn btn-sm btn-success" asp-action="Assign" asp-controller="MovieDay" asp-area="Admin" asp-route-id="@item.Id">Assign</a>
+                                    <a class="btn btn-sm btn-success" asp-action="Assign" asp-controller="MovieDay" asp-area="Admin" asp-route-id="@item.Id" asp-route-actionType="1">Assign</a>
                                 }
                             </td>
                         }

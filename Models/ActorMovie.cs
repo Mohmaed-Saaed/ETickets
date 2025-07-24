@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 
 namespace ETickets.Models;
 
 public partial class ActorMovie
 {
+
 
     public int? ActorId { get; set; }
     public int? MovieId { get; set; }

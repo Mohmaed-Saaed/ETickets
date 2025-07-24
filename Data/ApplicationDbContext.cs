@@ -110,7 +110,7 @@ namespace ETickets.Data;
                 entity.Property(e => e.Description)
                     .HasMaxLength(5000)
                     .IsUnicode(false);
-                entity.Property(e => e.EndDate).HasColumnType("datetime");
+                entity.Property(e => e.EndDate).HasColumnType("date");
                 entity.Property(e => e.ImgUrl)
                     .HasMaxLength(100)
                     .IsUnicode(false);
@@ -118,7 +118,7 @@ namespace ETickets.Data;
                     .HasMaxLength(50)
                     .IsUnicode(false);
                 entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
-                entity.Property(e => e.StartDate).HasColumnType("datetime");
+                entity.Property(e => e.StartDate).HasColumnType("date");
                 entity.Property(e => e.TrailerUrl)
                     .HasMaxLength(100)
                     .IsUnicode(false);
