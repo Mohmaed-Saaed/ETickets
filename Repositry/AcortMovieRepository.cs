@@ -5,12 +5,12 @@ using ETickets.Repositry.IRepositry;
 
 namespace ETickets.Repositry
 {
-    public class AcotMovieRepository : Repository<ActorMovie>, IActorMovieRepository
+    public class AcortMovieRepository : Repository<ActorMovie>, IActorMovieRepository
     {
 
         public readonly ApplicationDbContext _db;
 
-        public AcotMovieRepository(ApplicationDbContext db) : base (db) {
+        public AcortMovieRepository(ApplicationDbContext db) : base (db) {
             _db = db;
         }
 

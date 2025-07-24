@@ -21,9 +21,9 @@ public partial class Movie
     public string? TrailerUrl { get; set; }
 
     [Display(Name = "Start date")]
-    public DateTime StartDate { get; set; }
+    public DateOnly StartDate { get; set; }
     [Display(Name = "End date")]
-    public DateTime EndDate { get; set; }
+    public DateOnly EndDate { get; set; }
 
     [Display(Name = "Movie state")]
     public int MovieDisplayStateId { get; set; }
@@ -38,6 +38,6 @@ public partial class Movie
     public virtual ICollection<ActorMovie> ActorMovies { get; set; } = new List<ActorMovie>();
     public virtual ICollection<MovieImage>  MovieImages { get; set; } = new List<MovieImage>();
     public virtual Category? Category { get; set; }
-    public virtual MovieDisplayState? MovieDisplayState { get; set; }
+    public virtual MovieDisplayState MovieDisplayState { get; set; } = null!;
     public virtual Cinema? Cinema { get; set; }
 }

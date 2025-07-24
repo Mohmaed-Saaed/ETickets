@@ -25,11 +25,12 @@ namespace ETickets
             builder.Services.AddScoped<IMovieDisplayStateRepository , MovieDisplayStateRepository>();
             builder.Services.AddScoped<ICategoryRepository , CategoryRepository>();
             builder.Services.AddScoped<IActorRepository, ActosRepository>();
-            builder.Services.AddScoped<IActorMovieRepository, AcotMovieRepository>();
+            builder.Services.AddScoped<IActorMovieRepository, AcortMovieRepository>();
             builder.Services.AddScoped<IMovieRepository, MovieRepository>();
             builder.Services.AddScoped<ICartRepository, CartRepository>();
             builder.Services.AddScoped<IMovieDayRepository, MovieDayRepository>();
             builder.Services.AddScoped<IChairRepository, ChairRepository>();
+            builder.Services.AddScoped<IDayRepository, DayRepository>();
 
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
             builder.Services.AddScoped<IApplicationUserOTPRepository, ApplicationUserOTPRepository>();

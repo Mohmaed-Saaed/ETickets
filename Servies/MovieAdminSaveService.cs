@@ -34,7 +34,7 @@ namespace ETickets.Servies
         public AdminMovieSaveVM AdminMovieSaveVM(int Id)
         {
 
-            Movie movie = _MovieRepository.GetOne(x => x.Id == Id) ?? new Movie { EndDate = DateTime.Now, StartDate = DateTime.Now };
+            Movie movie = _MovieRepository.GetOne(x => x.Id == Id) ?? new Movie { EndDate = DateOnly.FromDateTime(DateTime.Now), StartDate = DateOnly.FromDateTime(DateTime.Now) };
 
             var selectedActorIds = _ActorMovieRepository.Get(x => x.MovieId == Id).Select(am => am.ActorId).ToList();
 

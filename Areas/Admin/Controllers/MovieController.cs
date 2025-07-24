@@ -34,7 +34,7 @@ namespace ETickets.Areas.Admin.Controllers
         [Authorize(Roles = $"{SD.SuperAdmin},{SD.Admin},{SD.Employee}")]
         public IActionResult Index()
         {
-            var movies = _MovieRepository.Get();
+            var movies = _MovieRepository.Get(include: [x => x.MovieDisplayState]);
 
             return View(movies);
         }

@@ -6,7 +6,7 @@
 
 <div class="p-3">
 
-        <div class="d-flex justify-content-between">
+    <div class="d-flex justify-content-between">
         <h1>Movies</h1>
 
 
@@ -17,20 +17,23 @@
             </p>
         }
 
-        </div>
+    </div>
 
     <div class="table-responsive">
         <table id="categoryTable" class="table table-striped  table-bordered">
             <thead class="thead-dark">
                 <tr>
-                    <th width="90%">
+                    <th width="70%">
                         Name
+                    </th>
+                    <th width="10%">
+                        Status
                     </th>
                     @if (User.Identity is not null && !User.IsInRole(SD.Employee))
                     {
-                        <th width="10%">Actions</th>
+                        <th width="20%">Actions</th>
                     }
-                  
+
                 </tr>
             </thead>
             <tbody>
@@ -40,12 +43,19 @@
                         <td>
                             @item.Name
                         </td>
+                        <td>
+                            @item.MovieDisplayState.Status
+                        </td>
                         @if (User.Identity is not null && !User.IsInRole(SD.Employee))
                         {
                             <td>
                                 <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">Edit</a> |
                                 <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@item.Id" data-name="@(item.Name)">Delete </button>
-                                <a asp-action="Assign" asp-controller="MovieDay" asp-area="Admin" asp-route-id="@item.Id">Assign</a>
+
+                                @if(item.MovieDisplayState.Id != (int)Global.MovieStatus.Expired)
+                                {
+                                <a class="btn btn-sm btn-success" asp-action="Assign" asp-controller="MovieDay" asp-area="Admin" asp-route-id="@item.Id">Assign</a>
+                                }
                             </td>
                         }
                      

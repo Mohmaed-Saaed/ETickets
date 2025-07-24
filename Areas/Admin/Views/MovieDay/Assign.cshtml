@@ -13,9 +13,12 @@
                     <div class="row justify-content-between">
                         <label asp-for="MovieName" class="control-label col-auto"></label>
                         <span class="control-label col-6">Duration time: @Model.Movie.Duration</span>
-
                     </div>
                     <input asp-for="MovieName" class="form-control" />
+                </div>
+                <div class="form-group row justify-content-between">
+                    <span>Start date: @Model.MovieStartDate</span>
+                    <span>End date: @Model.MovieEndDate</span>
                 </div>
                 <div class="form-group row ">
                         <label asp-for="Date" class="control-label"></label>
@@ -26,6 +29,14 @@
                     <div class="col-2 align-self-center">
                         <img data-bs-toggle="modal" data-bs-target="#exampleModal" id="calender" src="~/images/Icons/calendar.png" alt="Alternate Text" width="24" height="24" style="cursor:pointer" />
                     </div>
+                </div>
+          
+                <div class="form-group">
+                    <label asp-for="From" class="control-label"></label>
+                    <select asp-items="Model.Days" asp-for="DayId" class="form-select" >
+                        <option>-- Select a day --</option>
+                    </select>
+                    <span asp-validation-for="From" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">

@@ -98,7 +98,8 @@ namespace ETickets.Utilities
             if (!_Context.Movies.Any())
             {
                 _Context.Movies.Add(new Movie { Name = "Movie 1" , CategoryId = 1 , CinemaId = 1, MovieDisplayStateId = 3  , Description = "Description" 
-                ,Price = 100 , StartDate = DateTime.UtcNow , EndDate = DateTime.UtcNow.AddDays(10) });
+                ,Price = 100 , StartDate = DateOnly.FromDateTime(DateTime.Now), EndDate = DateOnly.FromDateTime(DateTime.Now.AddDays(10))
+                });
             }
 
             if (!_Context.ActorMovies.Any())

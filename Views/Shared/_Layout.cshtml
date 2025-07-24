@@ -30,13 +30,15 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-action="Cinemas">Cinemas</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="AddToCart">
-                                <img src="~/images/Icons/ticket.png"  alt="Cart" width="30" height="30"/>
+                        @if (User.IsInRole(SD.Employee) || User.Identity is null || User.IsInRole(SD.Customer))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="AddToCart">
+                                    <img src="~/images/Icons/ticket.png" alt="Cart" width="30" height="30" />
 
-                            </a>
-                        </li>
-                    
+                                </a>
+                            </li>
+                        }
                     </ul>
 
                 </div>
