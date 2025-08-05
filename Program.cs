@@ -8,7 +8,11 @@ using ETickets.Utilities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using System.Globalization;
+using static Microsoft.IO.RecyclableMemoryStreamManager;
 
 namespace ETickets
 {
@@ -38,6 +42,7 @@ namespace ETickets
             builder.Services.AddScoped<IMovieAdminSaveService, MovieAdminSaveService>();
             builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
             builder.Services.AddScoped<IReservationDetailRepository, ReservationDetailRepository>();
+
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -70,7 +75,33 @@ namespace ETickets
 
             Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"]; // Stripe.StripeConfiguration.ApiKey Global StripeConfiguration must have the secret key.
 
+
+
+
+            #region AddLocalization
+            var defualtCulture = "ar";
+
+            var supportedCultures = new[]{
+               new CultureInfo(defualtCulture),
+               new CultureInfo("ar")
+            };
+
+            builder.Services.AddLocalization(option => option.ResourcesPath = "Resources");
+
+            builder.Services.Configure<RequestLocalizationOptions>(config =>
+            {
+                config.DefaultRequestCulture = new RequestCulture(defualtCulture);
+                config.SupportedCultures = supportedCultures;
+                config.SupportedUICultures = supportedCultures;
+                config.RequestCultureProviders.Insert(0, new QueryStringRequestCultureProvider()); // Add culture from query
+
+            });
+
+            #endregion
+
             var app = builder.Build();
+
+            app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -83,6 +114,7 @@ namespace ETickets
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSession();

@@ -93,8 +93,6 @@ namespace ETickets.Areas.Customer.Controllers
             }
             return RedirectToAction("Details", "Home", new { area = "Customer", Id = movieId });
         }
-
-
         public async Task<IActionResult> Increment(int movieId)
         {
 

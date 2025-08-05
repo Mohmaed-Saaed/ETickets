@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace ETickets.Areas.Identity.Controllers
 {
@@ -17,6 +18,8 @@ namespace ETickets.Areas.Identity.Controllers
         private readonly IEmailSender _EmailSender;
         private readonly SignInManager<ApplicationUser> _SignInManager;
         private readonly IApplicationUserOTPRepository _ApplicationUserOTPRepository;
+        private readonly IStringLocalizer<SharedTitle> _StringLocalizer;
+
         public AccountController(UserManager<ApplicationUser> userManager, IEmailSender emailSender,
             SignInManager<ApplicationUser> signInManager,
             IApplicationUserOTPRepository applicationUserOTPRepository)
@@ -146,7 +149,7 @@ namespace ETickets.Areas.Identity.Controllers
                         return View(loginVM);
                     }
 
-                    TempData["success"] = "Logined in.";
+                    //TempData["success"] = ETickets.Resources.Title.LogedInSuccess;
                     await _SignInManager.SignInAsync(user, loginVM.RememberMe); // Sends token to the browser with userId and roles so they are saved in the brower
                     return RedirectToAction("Index", "Home", new { area = "Customer" });
                 }

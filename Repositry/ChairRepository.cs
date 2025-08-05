@@ -6,7 +6,7 @@ namespace ETickets.Repositry
 {
     public class ChairRepository : Repository<Chair>, IChairRepository
     {
-        public ChairRepository(ApplicationDbContext db) :base(db) { 
+        public ChairRepository(ApplicationDbContext db) :   base(db) { 
         
         }
     }

@@ -1,5 +1,13 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@inject IStringLocalizer<SharedTitle> Localizer
+@{
+    var cultureFeature = Context.Features.Get<IRequestCultureFeature>();
+    var culture = cultureFeature?.RequestCulture?.UICulture ?? System.Globalization.CultureInfo.CurrentUICulture;
+    var dir = culture.TextInfo.IsRightToLeft ? "rtl" : "ltr";
+}
+
+
+<!DOCTYPE html>
+<html lang="@culture.Name" dir="@dir">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,38 +26,42 @@
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <a class="navbar-brand" asp-action="Index"> <img src="~/images/logo.png"  width="150" height="50"> </a>
-                <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-action="Categories">Categories</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-action="Cinemas">Cinemas</a>
-                        </li>
-                        @if (User.IsInRole(SD.Employee) || User.Identity is null || User.IsInRole(SD.Customer))
-                        {
+                <div class="d-flex">
+                    <a class="navbar-brand" asp-action="Index"> <img src="~/images/logo.png" width="150" height="50"> </a>
+
+                    <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="AddToCart">
-                                    <img src="~/images/Icons/ticket.png" alt="Cart" width="30" height="30" />
-
-                                </a>
+                                <a class="nav-link" asp-action="Index">@Localizer["Home"]</a>
                             </li>
-                        }
-                    </ul>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-action="Categories">@Localizer["Categories"]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-action="Cinemas">@Localizer["Cinemas"]</a>
+                            </li>
+                            @if (User.IsInRole(SD.Employee) || User.Identity is null || User.IsInRole(SD.Customer))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="AddToCart">
+                                        <img src="~/images/Icons/ticket.png" alt="Cart" width="30" height="30" />
 
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+
+                    </div>
                 </div>
+           
 
-                <div class="collapse navbar-collapse justify-content-end" id="navbarTogglerDemo03">
+                <div class="collapse navbar-collapse justify-content-end flex-grow-0" id="navbarTogglerDemo03">
                     <ul class="navbar-nav mb-2 mb-lg-0">
 
                         @if(User.Identity is not null  && User.Identity.IsAuthenticated) // This is always there is the base class User 
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="SignOut">SignOut</a>
+                                <a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="SignOut">@Localizer["SignOut"]</a>
                             </li>
                             <li class="nav-item">
                                 <span class="nav-link">Welcome @User.Identity.Name</span>
@@ -57,17 +69,17 @@
                         } else
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="Login">Login</a>
+                                <a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="Login">@Localizer["Login"]</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="Register">Register</a>
+                                <a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="Register">@Localizer["Register"]</a>
                             </li>
                         }
 
                         @if(User.Identity is not null && User.Identity.IsAuthenticated && !User.IsInRole(SD.Customer))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="Admin" asp-controller="Home" asp-action="Index">Admin dashboard</a>
+                                <a class="nav-link" asp-area="Admin" asp-controller="Home" asp-action="Index">@Localizer["Admindashboard"]</a>
                             </li>
                         }
 

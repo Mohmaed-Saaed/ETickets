@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using NPOI.SS.Formula.Functions;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace ETickets.Repositry.IRepositry
 {

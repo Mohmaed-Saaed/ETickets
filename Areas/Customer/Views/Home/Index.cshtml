@@ -1,5 +1,5 @@
 ﻿@model IndexVM;
-
+@inject IStringLocalizer<SharedTitle> localizer
 <style>
 	body {
 		font-family: "Inter", sans-serif;
@@ -40,6 +40,7 @@
 	}
 
 	.movie-details {
+		margin:15px;
 		flex-grow: 1;
 		display: flex;
 		flex-direction: column;
@@ -92,10 +93,10 @@
 								<p class="col-auto"><strong>Price:</strong> <span class="badge bg-secondary rounded-pill px-3 py-2 text-base">@movie.Price</span></p>
 								<span class="col-2">@movie.Duration</span>
 								</div>
-								<p><strong>Cinema:</strong> @movie.Cinema?.Name</p>
-								<p><strong>Start Date:</strong> @movie.StartDate </p>
-								<p><strong>End Date:</strong> @movie.EndDate </p>
-								<p><strong>Category:</strong> <span class="text-decoration-none text-blue-600 hover:underline">@movie.Category?.Name</span></p>
+								<p><strong>@localizer["Cinema"]:</strong> @movie.Cinema?.Name</p>
+								<p><strong>@localizer["StartDate"]:</strong> @movie.StartDate </p>
+								<p><strong>@localizer["EndDate"]:</strong> @movie.EndDate </p>
+								<p><strong>@localizer["Category"]:</strong> <span class="text-decoration-none text-blue-600 hover:underline">@movie.Category?.Name</span></p>
 								<span class="btn-sm rounded-md shadow-sm px-3 py-2 font-medium
 
                                 @(movie.MovieDisplayStateId == (int)Global.MovieStatus.Available ? "bg-primary" :

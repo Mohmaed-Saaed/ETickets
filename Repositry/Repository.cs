@@ -90,7 +90,7 @@ namespace ETickets.Repositry
         {
             try
             {
-                _db.AddRange(entity);
+                _entity.AddRange(entity);
                 _db.SaveChanges();
                 return true;
             }
@@ -105,7 +105,7 @@ namespace ETickets.Repositry
         {
             try
             {
-                _db.RemoveRange(entity);
+                _entity.RemoveRange(entity);
                 _db.SaveChanges();
                 return true;
             }
@@ -120,7 +120,7 @@ namespace ETickets.Repositry
         {
             try
             {
-                _db.AddRange(entity);
+                _entity.AddRange(entity);
                 _db.SaveChanges();
                 return true;
             }
